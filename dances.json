@@ -1,0 +1,1427 @@
+{
+  "dances": [
+    {
+      "slug": "scottish",
+      "names": [
+        "Scottish",
+        "Schottische",
+        "Escoticha"
+      ],
+      "region": "Common",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "couple"
+      ]
+    },
+    {
+      "slug": "scottish-impair",
+      "names": [
+        "Scottish impair"
+      ],
+      "region": "Common",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "couple"
+      ]
+    },
+    {
+      "slug": "mazurka",
+      "names": [
+        "Mazurka"
+      ],
+      "region": "Common",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "couple"
+      ]
+    },
+    {
+      "slug": "polka",
+      "names": [
+        "Polka"
+      ],
+      "region": "Common",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "couple"
+      ]
+    },
+    {
+      "slug": "polka-piquee",
+      "names": [
+        "Polka piquée"
+      ],
+      "region": "Common",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "choreographed",
+        "couple"
+      ]
+    },
+    {
+      "slug": "chapelloise",
+      "names": [
+        "Chapelloise",
+        "Jig",
+        "Gigue"
+      ],
+      "region": "Common",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "mixer"
+      ]
+    },
+    {
+      "slug": "cercle-circassien",
+      "names": [
+        "Cercle Circassien",
+        "Circassian Circle"
+      ],
+      "region": "Common",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "mixer"
+      ]
+    },
+    {
+      "slug": "zelda",
+      "names": [
+        "Zelda"
+      ],
+      "region": "Common",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "mixer"
+      ]
+    },
+    {
+      "slug": "waltz-in-3",
+      "names": [
+        "Waltz in 3",
+        "Valse à 3 temps"
+      ],
+      "region": "Common",
+      "family": "Waltzes",
+      "suite": null,
+      "tags": [
+        "couple",
+        "waltz"
+      ]
+    },
+    {
+      "slug": "waltz-in-5",
+      "names": [
+        "Waltz in 5",
+        "Valse à 5 temps"
+      ],
+      "region": "Common",
+      "family": "Waltzes",
+      "suite": null,
+      "tags": [
+        "couple",
+        "waltz"
+      ]
+    },
+    {
+      "slug": "waltz-in-8",
+      "names": [
+        "Waltz in 8",
+        "Valse à 8 temps"
+      ],
+      "region": "Common",
+      "family": "Waltzes",
+      "suite": null,
+      "tags": [
+        "couple",
+        "waltz"
+      ]
+    },
+    {
+      "slug": "waltz-in-11",
+      "names": [
+        "Waltz in 11",
+        "Valse à 11 temps"
+      ],
+      "region": "Common",
+      "family": "Waltzes",
+      "suite": null,
+      "tags": [
+        "couple",
+        "waltz"
+      ]
+    },
+    {
+      "slug": "an-dro",
+      "names": [
+        "An dro",
+        "En dro",
+        "Andro"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "an-dro-retourne",
+      "names": [
+        "An dro retourné"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "hanter-dro",
+      "names": [
+        "Hanter dro",
+        "Hanterdro"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "hanter-dro-klamm",
+      "names": [
+        "Hanter dro klamm"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "tour",
+      "names": [
+        "Tour"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "tricot",
+      "names": [
+        "Tricot",
+        "Trikot"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "kejaj",
+      "names": [
+        "Kejaj",
+        "Keijaj"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "kost-ar-c-hoad",
+      "names": [
+        "Kost ar c'hoad",
+        "Kost ar c'hoat"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "gavotte-du-bas-leon",
+      "names": [
+        "Gavotte du Bas Leon"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "laride",
+      "names": [
+        "Laridé",
+        "Laridée"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "ridee-6-temps",
+      "names": [
+        "Ridée 6 temps"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "ridee-de-josselin",
+      "names": [
+        "Ridée de Josselin"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "rond-de-saint-vincent",
+      "names": [
+        "Rond de Saint-Vincent"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "pile-menu",
+      "names": [
+        "Pilé-menu"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "rond-paludier",
+      "names": [
+        "Rond paludier"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "bal-paludier",
+      "names": [
+        "Bal paludier"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "pach-pi",
+      "names": [
+        "Pach pi",
+        "Passepied"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "rond-de-landeda",
+      "names": [
+        "Rond de Landéda"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "kerouezee",
+      "names": [
+        "Kerouezee"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "cochinchine",
+      "names": [
+        "Cochinchine"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "galop-nantais",
+      "names": [
+        "Galop nantais"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "polka-de-paimpol",
+      "names": [
+        "Polka de Paimpol"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "danse-keff",
+      "names": [
+        "Danse Keff",
+        "Dañs Keff"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "demi-tour",
+      "names": [
+        "Demi-tour"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "kas-a-barh",
+      "names": [
+        "Kas a-barh",
+        "Kas ha barh"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "gavotte-des-montagnes",
+      "names": [
+        "Gavotte des montagnes",
+        "Ton simpl",
+        "Ton kentan"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite montagne",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "tamm-kreiz",
+      "names": [
+        "Tamm kreiz",
+        "Bal gavotte"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite montagne",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "ton-doubl",
+      "names": [
+        "Ton doubl",
+        "Ton diverzhan"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite montagne",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "gavotte-de-l-aven",
+      "names": [
+        "Gavotte de l'Aven"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite de l'Aven",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "bal-de-l-aven",
+      "names": [
+        "Bal de l'Aven"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite de l'Aven",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "jabadao-de-l-aven",
+      "names": [
+        "Jabadao de l'Aven"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite de l'Aven",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "dans-fisel",
+      "names": [
+        "Dañs fisel",
+        "Ton simpl"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite fisel",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "bal-fisel",
+      "names": [
+        "Bal fisel"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite fisel",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "ton-doubl-suite-fisel",
+      "names": [
+        "Ton doubl"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite fisel",
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "dans-plinn",
+      "names": [
+        "Dañs plinn",
+        "Ton simpl"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite plinn",
+      "tags": []
+    },
+    {
+      "slug": "bal-plinn",
+      "names": [
+        "Bal plinn"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite plinn",
+      "tags": []
+    },
+    {
+      "slug": "ton-doubl-suite-plinn",
+      "names": [
+        "Ton doubl"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite plinn",
+      "tags": []
+    },
+    {
+      "slug": "rond-de-loudeac",
+      "names": [
+        "Rond de Loudéac",
+        "Rond de Loudia"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite de Loudéac",
+      "tags": []
+    },
+    {
+      "slug": "baleu",
+      "names": [
+        "Baleu"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite de Loudéac",
+      "tags": []
+    },
+    {
+      "slug": "riquegnee",
+      "names": [
+        "Riquegnée"
+      ],
+      "region": "Bretagne (France)",
+      "family": null,
+      "suite": "Suite de Loudéac",
+      "tags": []
+    },
+    {
+      "slug": "avant-deux-de-travers",
+      "names": [
+        "Avant-deux de travers"
+      ],
+      "region": "Bretagne (France)",
+      "family": "Avant-deux",
+      "suite": null,
+      "tags": [
+        "avant-deux"
+      ]
+    },
+    {
+      "slug": "avant-deux-de-bazouges",
+      "names": [
+        "Avant-deux de Bazouges",
+        "Avant-deux de Ille et Vilaine"
+      ],
+      "region": "Bretagne (France)",
+      "family": "Avant-deux",
+      "suite": null,
+      "tags": [
+        "avant-deux"
+      ]
+    },
+    {
+      "slug": "avant-deux-du-coglais",
+      "names": [
+        "Avant-deux du Coglais"
+      ],
+      "region": "Bretagne (France)",
+      "family": "Avant-deux",
+      "suite": null,
+      "tags": [
+        "avant-deux"
+      ]
+    },
+    {
+      "slug": "avant-quatre-du-tregor",
+      "names": [
+        "Avant-quatre du Trégor"
+      ],
+      "region": "Bretagne (France)",
+      "family": "Avant-deux",
+      "suite": null,
+      "tags": [
+        "avant-deux"
+      ]
+    },
+    {
+      "slug": "avant-deux-de-long",
+      "names": [
+        "Avant-deux de Long"
+      ],
+      "region": "Bretagne (France)",
+      "family": "Avant-deux",
+      "suite": null,
+      "tags": [
+        "avant-deux"
+      ]
+    },
+    {
+      "slug": "aeroplane-de-saint-peran",
+      "names": [
+        "Aéroplane de Saint Peran"
+      ],
+      "region": "Bretagne (France)",
+      "family": "Aéroplane",
+      "suite": null,
+      "tags": [
+        "aeroplane"
+      ]
+    },
+    {
+      "slug": "aeroplane-de-notre-dame-des-landes",
+      "names": [
+        "Aéroplane de Notre Dame des Landes"
+      ],
+      "region": "Bretagne (France)",
+      "family": "Aéroplane",
+      "suite": null,
+      "tags": [
+        "aeroplane"
+      ]
+    },
+    {
+      "slug": "rond-d-argenton",
+      "names": [
+        "Rond d'Argenton"
+      ],
+      "region": "Auvergne & Centre-France (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "bourree-2-temps",
+      "names": [
+        "Bourrée 2 temps"
+      ],
+      "region": "Auvergne & Centre-France (France)",
+      "family": "Bourrée",
+      "suite": null,
+      "tags": [
+        "bourree"
+      ]
+    },
+    {
+      "slug": "bourree-3-temps",
+      "names": [
+        "Bourrée 3 temps"
+      ],
+      "region": "Auvergne & Centre-France (France)",
+      "family": "Bourrée",
+      "suite": null,
+      "tags": [
+        "bourree"
+      ]
+    },
+    {
+      "slug": "bourree-3-temps-de-berry",
+      "names": [
+        "Bourrée 3 temps de Berry"
+      ],
+      "region": "Auvergne & Centre-France (France)",
+      "family": "Bourrée",
+      "suite": null,
+      "tags": [
+        "bourree"
+      ]
+    },
+    {
+      "slug": "bourree-3-temps-auvergnate",
+      "names": [
+        "Bourrée 3 temps Auvergnate"
+      ],
+      "region": "Auvergne & Centre-France (France)",
+      "family": "Bourrée",
+      "suite": null,
+      "tags": [
+        "bourree"
+      ]
+    },
+    {
+      "slug": "bourree-en-cercle",
+      "names": [
+        "Bourrée en cercle"
+      ],
+      "region": "Auvergne & Centre-France (France)",
+      "family": "Bourrée",
+      "suite": null,
+      "tags": [
+        "bourree"
+      ]
+    },
+    {
+      "slug": "bourree-de-chamberat",
+      "names": [
+        "Bourrée de Chambérat"
+      ],
+      "region": "Auvergne & Centre-France (France)",
+      "family": "Bourrée",
+      "suite": null,
+      "tags": [
+        "bourree"
+      ]
+    },
+    {
+      "slug": "ronde-du-quercy",
+      "names": [
+        "Ronde du Quercy"
+      ],
+      "region": "Gascogne, Béarn & Quercy (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "congo-de-captieux",
+      "names": [
+        "Congo de Captieux"
+      ],
+      "region": "Gascogne, Béarn & Quercy (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "congo-de-luxieu",
+      "names": [
+        "Congo de Luxieu"
+      ],
+      "region": "Gascogne, Béarn & Quercy (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "branle-bearnais",
+      "names": [
+        "Branle béarnais",
+        "Branle d'Ossau",
+        "Branle de Vallée d'Ossau"
+      ],
+      "region": "Gascogne, Béarn & Quercy (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "rondeau-en-chaine",
+      "names": [
+        "Rondeau en chaîne"
+      ],
+      "region": "Gascogne, Béarn & Quercy (France)",
+      "family": "Rondeau",
+      "suite": null,
+      "tags": [
+        "rondeau"
+      ]
+    },
+    {
+      "slug": "rondeau-en-couple",
+      "names": [
+        "Rondeau en couple"
+      ],
+      "region": "Gascogne, Béarn & Quercy (France)",
+      "family": "Rondeau",
+      "suite": null,
+      "tags": [
+        "rondeau"
+      ]
+    },
+    {
+      "slug": "maraichine",
+      "names": [
+        "Maraîchine"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "avant-deux-du-bocage",
+      "names": [
+        "Avant-deux du Bocage"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "avant-deux"
+      ]
+    },
+    {
+      "slug": "avant-deux-a-coutan",
+      "names": [
+        "Avant-deux à Coutan"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "avant-deux"
+      ]
+    },
+    {
+      "slug": "avant-deux-a-quatre-figures",
+      "names": [
+        "Avant-deux à quatre figures"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "avant-deux"
+      ]
+    },
+    {
+      "slug": "pas-d-ete",
+      "names": [
+        "Pas d'été"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "branle-de-noirmoutier",
+      "names": [
+        "Branle de Noirmoutier",
+        "Branle de l'Epines"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "ronde-de-barbatre",
+      "names": [
+        "Ronde de Barbatre"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "marchoise",
+      "names": [
+        "Marchoise"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "bal-limousine",
+      "names": [
+        "Bal Limousine"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "rond-de-l-ile-d-yeu",
+      "names": [
+        "Rond de l'Île d'Yeu"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "poraie",
+      "names": [
+        "Poraïe"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "polaie",
+      "names": [
+        "Polaie"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "chasse-a-quattre",
+      "names": [
+        "Chasse à Quattre"
+      ],
+      "region": "Poitou & Vendée (France)",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "fandango",
+      "names": [
+        "Fandango"
+      ],
+      "region": "Basque Country",
+      "family": null,
+      "suite": "Fandango eta arin-arin",
+      "tags": []
+    },
+    {
+      "slug": "arin-arin",
+      "names": [
+        "Arin-arin"
+      ],
+      "region": "Basque Country",
+      "family": null,
+      "suite": "Fandango eta arin-arin",
+      "tags": []
+    },
+    {
+      "slug": "mutxiko",
+      "names": [
+        "Mutxiko"
+      ],
+      "region": "Basque Country",
+      "family": "Sauts basques",
+      "suite": null,
+      "tags": [
+        "saut"
+      ]
+    },
+    {
+      "slug": "zazpi-jautzi",
+      "names": [
+        "Zazpi jautzi",
+        "Sept sauts"
+      ],
+      "region": "Basque Country",
+      "family": "Sauts basques",
+      "suite": null,
+      "tags": [
+        "saut"
+      ]
+    },
+    {
+      "slug": "polska",
+      "names": [
+        "Polska",
+        "Bingsjöpolska"
+      ],
+      "region": "Sweden",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "slangpolska",
+      "names": [
+        "Slängpolska"
+      ],
+      "region": "Sweden",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "schottis",
+      "names": [
+        "Schottis"
+      ],
+      "region": "Sweden",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "haling",
+      "names": [
+        "Haling"
+      ],
+      "region": "Sweden",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "maclotte",
+      "names": [
+        "Maclotte",
+        "Maclote"
+      ],
+      "region": "Belgium",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "pieternelle",
+      "names": [
+        "Pieternelle"
+      ],
+      "region": "Belgium",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "bravade",
+      "names": [
+        "Bravade"
+      ],
+      "region": "Netherlands",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "ijswals",
+      "names": [
+        "IJswals"
+      ],
+      "region": "Netherlands",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "sbrando",
+      "names": [
+        "Sbrando"
+      ],
+      "region": "Italy",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "tarantella",
+      "names": [
+        "Tarantella"
+      ],
+      "region": "Italy",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "repasseado",
+      "names": [
+        "Repasseado"
+      ],
+      "region": "Portugal",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "branle-de-la-fosse-aux-loups",
+      "names": [
+        "Branle de la Fosse aux Loups"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "aacho",
+      "names": [
+        "Aacho"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "grabbelton",
+      "names": [
+        "Grabbelton"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "gavotte-grenoble",
+      "names": [
+        "Gavotte Grenoble"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": [
+        "gavotte"
+      ]
+    },
+    {
+      "slug": "madison",
+      "names": [
+        "Madison"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "tzadik-katamar",
+      "names": [
+        "Tzadik Katamar"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "branle-d-ecosse",
+      "names": [
+        "Branle d'Ecosse"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "danse-de-l-ours",
+      "names": [
+        "Danse de l'Ours"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "fourmies",
+      "names": [
+        "Fourmies"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    }
+  ],
+  "groups": [
+    {
+      "slug": "waltzes",
+      "names": [
+        "Waltzes"
+      ],
+      "kind": "family",
+      "region": "Common",
+      "tags": [
+        "waltz"
+      ],
+      "dances": [
+        "waltz-in-3",
+        "waltz-in-5",
+        "waltz-in-8",
+        "waltz-in-11"
+      ]
+    },
+    {
+      "slug": "suite-montagne",
+      "names": [
+        "Suite montagne"
+      ],
+      "kind": "suite",
+      "region": "Bretagne (France)",
+      "tags": [
+        "gavotte"
+      ],
+      "dances": [
+        "gavotte-des-montagnes",
+        "tamm-kreiz",
+        "ton-doubl"
+      ]
+    },
+    {
+      "slug": "suite-de-l-aven",
+      "names": [
+        "Suite de l'Aven"
+      ],
+      "kind": "suite",
+      "region": "Bretagne (France)",
+      "tags": [
+        "gavotte"
+      ],
+      "dances": [
+        "gavotte-de-l-aven",
+        "bal-de-l-aven",
+        "jabadao-de-l-aven"
+      ]
+    },
+    {
+      "slug": "suite-fisel",
+      "names": [
+        "Suite fisel"
+      ],
+      "kind": "suite",
+      "region": "Bretagne (France)",
+      "tags": [
+        "gavotte"
+      ],
+      "dances": [
+        "dans-fisel",
+        "bal-fisel",
+        "ton-doubl-suite-fisel"
+      ]
+    },
+    {
+      "slug": "suite-plinn",
+      "names": [
+        "Suite plinn"
+      ],
+      "kind": "suite",
+      "region": "Bretagne (France)",
+      "tags": [],
+      "dances": [
+        "dans-plinn",
+        "bal-plinn",
+        "ton-doubl-suite-plinn"
+      ]
+    },
+    {
+      "slug": "suite-de-loudeac",
+      "names": [
+        "Suite de Loudéac"
+      ],
+      "kind": "suite",
+      "region": "Bretagne (France)",
+      "tags": [],
+      "dances": [
+        "rond-de-loudeac",
+        "baleu",
+        "riquegnee"
+      ]
+    },
+    {
+      "slug": "avant-deux",
+      "names": [
+        "Avant-deux"
+      ],
+      "kind": "family",
+      "region": "Bretagne (France)",
+      "tags": [
+        "avant-deux"
+      ],
+      "dances": [
+        "avant-deux-de-travers",
+        "avant-deux-de-bazouges",
+        "avant-deux-du-coglais",
+        "avant-quatre-du-tregor",
+        "avant-deux-de-long"
+      ]
+    },
+    {
+      "slug": "aeroplane",
+      "names": [
+        "Aéroplane"
+      ],
+      "kind": "family",
+      "region": "Bretagne (France)",
+      "tags": [
+        "aeroplane"
+      ],
+      "dances": [
+        "aeroplane-de-saint-peran",
+        "aeroplane-de-notre-dame-des-landes"
+      ]
+    },
+    {
+      "slug": "bourree",
+      "names": [
+        "Bourrée"
+      ],
+      "kind": "family",
+      "region": "Auvergne & Centre-France (France)",
+      "tags": [
+        "bourree"
+      ],
+      "dances": [
+        "bourree-2-temps",
+        "bourree-3-temps",
+        "bourree-3-temps-de-berry",
+        "bourree-3-temps-auvergnate",
+        "bourree-en-cercle",
+        "bourree-de-chamberat"
+      ]
+    },
+    {
+      "slug": "rondeau",
+      "names": [
+        "Rondeau"
+      ],
+      "kind": "family",
+      "region": "Gascogne, Béarn & Quercy (France)",
+      "tags": [
+        "rondeau"
+      ],
+      "dances": [
+        "rondeau-en-chaine",
+        "rondeau-en-couple"
+      ]
+    },
+    {
+      "slug": "fandango-eta-arin-arin",
+      "names": [
+        "Fandango eta arin-arin"
+      ],
+      "kind": "suite",
+      "region": "Basque Country",
+      "tags": [],
+      "dances": [
+        "fandango",
+        "arin-arin"
+      ]
+    },
+    {
+      "slug": "sauts-basques",
+      "names": [
+        "Sauts basques",
+        "Jauziak"
+      ],
+      "kind": "family",
+      "region": "Basque Country",
+      "tags": [
+        "saut"
+      ],
+      "dances": [
+        "mutxiko",
+        "zazpi-jautzi"
+      ]
+    }
+  ],
+  "ambiguousNames": [
+    {
+      "name": "Ton doubl",
+      "dances": [
+        "ton-doubl",
+        "ton-doubl-suite-fisel",
+        "ton-doubl-suite-plinn"
+      ]
+    },
+    {
+      "name": "Ton simpl",
+      "dances": [
+        "gavotte-des-montagnes",
+        "dans-fisel",
+        "dans-plinn"
+      ]
+    }
+  ]
+}
