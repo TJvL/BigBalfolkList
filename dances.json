@@ -18,7 +18,8 @@
     {
       "slug": "scottish-impair",
       "names": [
-        "Scottish impair"
+        "Scottish impair",
+        "Scottish impaire"
       ],
       "region": "Common",
       "family": null,
@@ -30,7 +31,9 @@
     {
       "slug": "mazurka",
       "names": [
-        "Mazurka"
+        "Mazurka",
+        "Mazurca",
+        "Masurka"
       ],
       "region": "Common",
       "family": null,
@@ -69,7 +72,8 @@
       "names": [
         "Chapelloise",
         "Jig",
-        "Gigue"
+        "Gigue",
+        "Chapeloise"
       ],
       "region": "Common",
       "family": null,
@@ -82,7 +86,8 @@
       "slug": "cercle-circassien",
       "names": [
         "Cercle Circassien",
-        "Circassian Circle"
+        "Circassian Circle",
+        "Circassien"
       ],
       "region": "Common",
       "family": null,
@@ -107,7 +112,15 @@
       "slug": "waltz-in-3",
       "names": [
         "Waltz in 3",
-        "Valse à 3 temps"
+        "Valse à 3 temps",
+        "Waltz 3",
+        "Valse 3",
+        "Wals in 3",
+        "Wals 3",
+        "Wals",
+        "Vals",
+        "Valse",
+        "Waltz"
       ],
       "region": "Common",
       "family": "Waltzes",
@@ -121,7 +134,11 @@
       "slug": "waltz-in-5",
       "names": [
         "Waltz in 5",
-        "Valse à 5 temps"
+        "Valse à 5 temps",
+        "Waltz 5",
+        "Valse 5",
+        "Wals in 5",
+        "Wals 5"
       ],
       "region": "Common",
       "family": "Waltzes",
@@ -135,7 +152,11 @@
       "slug": "waltz-in-8",
       "names": [
         "Waltz in 8",
-        "Valse à 8 temps"
+        "Valse à 8 temps",
+        "Waltz 8",
+        "Valse 8",
+        "Wals in 8",
+        "Wals 8"
       ],
       "region": "Common",
       "family": "Waltzes",
@@ -149,7 +170,11 @@
       "slug": "waltz-in-11",
       "names": [
         "Waltz in 11",
-        "Valse à 11 temps"
+        "Valse à 11 temps",
+        "Waltz 11",
+        "Valse 11",
+        "Wals in 11",
+        "Wals 11"
       ],
       "region": "Common",
       "family": "Waltzes",
@@ -195,7 +220,8 @@
     {
       "slug": "hanter-dro-klamm",
       "names": [
-        "Hanter dro klamm"
+        "Hanter dro klamm",
+        "Hanterdro klamm"
       ],
       "region": "Bretagne (France)",
       "family": null,
@@ -235,7 +261,7 @@
       "tags": []
     },
     {
-      "slug": "kost-ar-c-hoad",
+      "slug": "kost-ar-choad",
       "names": [
         "Kost ar c'hoad",
         "Kost ar c'hoat"
@@ -271,7 +297,8 @@
     {
       "slug": "ridee-6-temps",
       "names": [
-        "Ridée 6 temps"
+        "Ridée 6 temps",
+        "Ridée 6"
       ],
       "region": "Bretagne (France)",
       "family": null,
@@ -291,7 +318,8 @@
     {
       "slug": "rond-de-saint-vincent",
       "names": [
-        "Rond de Saint-Vincent"
+        "Rond de Saint-Vincent",
+        "Rond de St Vincent"
       ],
       "region": "Bretagne (France)",
       "family": null,
@@ -462,7 +490,7 @@
       ]
     },
     {
-      "slug": "gavotte-de-l-aven",
+      "slug": "gavotte-de-laven",
       "names": [
         "Gavotte de l'Aven"
       ],
@@ -474,7 +502,7 @@
       ]
     },
     {
-      "slug": "bal-de-l-aven",
+      "slug": "bal-de-laven",
       "names": [
         "Bal de l'Aven"
       ],
@@ -486,7 +514,7 @@
       ]
     },
     {
-      "slug": "jabadao-de-l-aven",
+      "slug": "jabadao-de-laven",
       "names": [
         "Jabadao de l'Aven"
       ],
@@ -682,7 +710,7 @@
       ]
     },
     {
-      "slug": "rond-d-argenton",
+      "slug": "rond-dargenton",
       "names": [
         "Rond d'Argenton"
       ],
@@ -694,7 +722,11 @@
     {
       "slug": "bourree-2-temps",
       "names": [
-        "Bourrée 2 temps"
+        "Bourrée 2 temps",
+        "Bourrée à 2 temps",
+        "Bourrée in 2",
+        "Bourrée 2",
+        "Bourrée 2t"
       ],
       "region": "Auvergne & Centre-France (France)",
       "family": "Bourrée",
@@ -706,7 +738,11 @@
     {
       "slug": "bourree-3-temps",
       "names": [
-        "Bourrée 3 temps"
+        "Bourrée 3 temps",
+        "Bourrée à 3 temps",
+        "Bourrée in 3",
+        "Bourrée 3",
+        "Bourrée 3t"
       ],
       "region": "Auvergne & Centre-France (France)",
       "family": "Bourrée",
@@ -718,7 +754,8 @@
     {
       "slug": "bourree-3-temps-de-berry",
       "names": [
-        "Bourrée 3 temps de Berry"
+        "Bourrée 3 temps de Berry",
+        "Bourrée de Berry"
       ],
       "region": "Auvergne & Centre-France (France)",
       "family": "Bourrée",
@@ -730,7 +767,8 @@
     {
       "slug": "bourree-3-temps-auvergnate",
       "names": [
-        "Bourrée 3 temps Auvergnate"
+        "Bourrée 3 temps Auvergnate",
+        "Bourrée auvergnate"
       ],
       "region": "Auvergne & Centre-France (France)",
       "family": "Bourrée",
@@ -755,6 +793,18 @@
       "slug": "bourree-de-chamberat",
       "names": [
         "Bourrée de Chambérat"
+      ],
+      "region": "Auvergne & Centre-France (France)",
+      "family": "Bourrée",
+      "suite": null,
+      "tags": [
+        "bourree"
+      ]
+    },
+    {
+      "slug": "bourree-planiere",
+      "names": [
+        "Bourrée planière"
       ],
       "region": "Auvergne & Centre-France (France)",
       "family": "Bourrée",
@@ -886,7 +936,7 @@
       ]
     },
     {
-      "slug": "pas-d-ete",
+      "slug": "pas-dete",
       "names": [
         "Pas d'été"
       ],
@@ -909,7 +959,8 @@
     {
       "slug": "ronde-de-barbatre",
       "names": [
-        "Ronde de Barbatre"
+        "Ronde de Barbatre",
+        "Rond de Barbatre"
       ],
       "region": "Poitou & Vendée (France)",
       "family": null,
@@ -937,7 +988,7 @@
       "tags": []
     },
     {
-      "slug": "rond-de-l-ile-d-yeu",
+      "slug": "rond-de-lile-dyeu",
       "names": [
         "Rond de l'Île d'Yeu"
       ],
@@ -1164,9 +1215,30 @@
       "tags": []
     },
     {
+      "slug": "reel",
+      "names": [
+        "Reel"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
+      "slug": "forro",
+      "names": [
+        "Forró"
+      ],
+      "region": "Modern, neo-folk and undetermined",
+      "family": null,
+      "suite": null,
+      "tags": []
+    },
+    {
       "slug": "gavotte-grenoble",
       "names": [
-        "Gavotte Grenoble"
+        "Gavotte Grenoble",
+        "Gavotte de Grenoble"
       ],
       "region": "Modern, neo-folk and undetermined",
       "family": null,
@@ -1196,7 +1268,7 @@
       "tags": []
     },
     {
-      "slug": "branle-d-ecosse",
+      "slug": "branle-decosse",
       "names": [
         "Branle d'Ecosse"
       ],
@@ -1206,7 +1278,7 @@
       "tags": []
     },
     {
-      "slug": "danse-de-l-ours",
+      "slug": "danse-de-lours",
       "names": [
         "Danse de l'Ours"
       ],
@@ -1261,7 +1333,7 @@
       ]
     },
     {
-      "slug": "suite-de-l-aven",
+      "slug": "suite-de-laven",
       "names": [
         "Suite de l'Aven"
       ],
@@ -1271,9 +1343,9 @@
         "gavotte"
       ],
       "dances": [
-        "gavotte-de-l-aven",
-        "bal-de-l-aven",
-        "jabadao-de-l-aven"
+        "gavotte-de-laven",
+        "bal-de-laven",
+        "jabadao-de-laven"
       ]
     },
     {
@@ -1369,7 +1441,8 @@
         "bourree-3-temps-de-berry",
         "bourree-3-temps-auvergnate",
         "bourree-en-cercle",
-        "bourree-de-chamberat"
+        "bourree-de-chamberat",
+        "bourree-planiere"
       ]
     },
     {
