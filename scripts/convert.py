@@ -229,6 +229,9 @@ def main() -> int:
     ambiguous = find_ambiguous(dances)
 
     document = {
+        # Bumped only when the shape changes in a way that would break a consumer, so an
+        # application embedding this file can refuse a version it does not understand.
+        "formatVersion": 1,
         "dances": dances,
         "groups": groups,
         "ambiguousNames": ambiguous,
