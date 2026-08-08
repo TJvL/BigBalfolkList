@@ -70,7 +70,8 @@ jobs:
             --title 'chore: regenerate dances.json' \
             --body 'Generated from dances.md by the Generate workflow. Nothing here was written by hand.'
 
-          gh pr merge "$BRANCH" --merge --delete-branch
+          # Squash: the only method this repository allows.
+          gh pr merge "$BRANCH" --squash --delete-branch
 
       # A push made with GITHUB_TOKEN does not start another workflow run, so merging the
       # pull request above cannot loop back into this job.
