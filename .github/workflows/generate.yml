@@ -43,8 +43,10 @@ jobs:
       # After a merge, the regenerated files arrive as their own pull request rather than
       # as a push. Main requires a pull request, and GitHub only lets Actions bypass that
       # on a paid organization plan, so the bot follows the same rule as everyone else.
+      # Anything but a pull request: a push to main, and a manual run, which needs to be
+      # able to repair main after something goes wrong.
       - name: Open a regeneration pull request
-        if: github.event_name == 'push'
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
