@@ -32,9 +32,13 @@ programming, not for this list.
 | `slugs.lock.json` | Remembers which slug each dance has, so renaming one or fixing an accent does not change its identity for anything already using it. Never edit it. |
 
 Every dance has a slug and it is the identity, because no name can be: the names are equals by
-design. `ambiguousNames` in the JSON lists names that belong to more than one dance, which is real
-rather than a mistake. Each Breton suite has its own `Ton doubl`, so a consumer matching that string
-should treat it as "one of these" rather than picking.
+design.
+
+**A name belongs to exactly one dance**, and the build fails if that stops being true. So a consumer
+that finds a name in a filename can resolve it to one dance and never has to model ambiguity. Where
+the same word really does name several dances — each Breton suite has its own `Ton doubl` — the
+entries carry the suite: `Ton doubl (montagne)`, `Ton doubl (fisel)`, `Ton doubl (plinn)`. Qualify
+the same way when you add one, and the error message will tell you if you forget.
 
 ## Licence
 
