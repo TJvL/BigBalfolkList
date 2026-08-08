@@ -135,22 +135,29 @@ def fail(line: int, message: str) -> None:
 
 
 def lock_keys(entry: dict, kind: str) -> list[str]:
-    """The keys an entry is remembered by.
+    """The keys an entry is remembered by: every one of its names.
 
-    Scoped by its group, because a name is only unique inside its context: each Breton
-    suite has its own "Ton doubl" and they are three different dances. Keying on the bare
-    name would silently merge them into one.
+    A bare name is enough because check_names_are_unique guarantees no two dances share
+    one. Dances and groups are kept in separate namespaces since a suite and a dance may
+    legitimately be called the same thing.
     """
-    context = entry.get("suite") or entry.get("family") if kind == "dance" else None
-    prefix = f"{kind}:{fold(context)}:" if context else f"{kind}:"
-    return [prefix + fold(name) for name in entry["names"]]
+    return [f"{kind}:{fold(name)}" for name in entry["names"]]
 
 
-def assign_slugs(entries: list[dict], kind: str, lock: dict[str, str], taken: set[str]) -> None:
+def assign_slugs(
+    entries: list[dict],
+    kind: str,
+    lock: dict[str, str],
+    taken: set[str],
+    assigned: dict[str, dict],
+) -> None:
     """Give every entry a slug that never changes once it has one.
 
     The lock maps every key an entry has ever had to its slug, so renaming a dance,
     fixing an accent or reordering its spellings leaves consumers unaffected.
+
+    `assigned` catches the one way that goes wrong: two entries whose names both hit the
+    same lock key take the same slug, which would merge them into one dance in silence.
     """
     for entry in entries:
         keys = lock_keys(entry, kind)
@@ -172,35 +179,58 @@ def assign_slugs(entries: list[dict], kind: str, lock: dict[str, str], taken: se
                 slug = f"{base}-{suffix}"
                 suffix += 1
 
+        if slug in assigned:
+            print(
+                f"dances.md: {entry['names'][0]!r} and {assigned[slug]['names'][0]!r} both "
+                f"resolve to the slug {slug!r}. They share a name, so one of them needs a "
+                "different one.",
+                file=sys.stderr,
+            )
+            raise SystemExit(1)
+
         entry["slug"] = slug
+        assigned[slug] = entry
         taken.add(slug)
         for key in keys:
             lock[key] = slug
 
 
-def find_ambiguous(dances: list[dict]) -> list[dict]:
-    """Names that belong to more than one dance.
+def check_names_are_unique(dances: list[dict]) -> None:
+    """A name belongs to exactly one dance, or the build fails.
 
-    These are real rather than mistakes: "Ton doubl" is a different dance in each Breton
-    suite. A consumer matching a filename cannot tell which one is meant, so the name is
-    published as ambiguous and callers should treat a hit as "some dance in this set".
+    This is the guarantee the whole list rests on: a consumer that finds a name in a
+    filename can resolve it to one dance without asking anybody anything. Where the same
+    word really is used for several dances — "Ton doubl" is a different dance in each
+    Breton suite — the entries carry the suite in the name to tell them apart.
+
+    Enforced here rather than published as data, because ambiguity that ships is
+    ambiguity every consumer has to model, forever.
     """
-    seen: dict[str, list[str]] = {}
+    # Keyed by position rather than by slug: two entries that collide hard enough end up
+    # sharing a slug, and comparing slugs would then see one dance where there are two.
+    seen: dict[str, list[int]] = {}
     display: dict[str, str] = {}
 
-    for dance in dances:
+    for index, dance in enumerate(dances):
         for name in dance["names"]:
             key = fold(name)
             display.setdefault(key, name)
-            slugs = seen.setdefault(key, [])
-            if dance["slug"] not in slugs:
-                slugs.append(dance["slug"])
+            entries = seen.setdefault(key, [])
+            if index not in entries:
+                entries.append(index)
 
-    return [
-        {"name": display[key], "dances": slugs}
-        for key, slugs in sorted(seen.items())
-        if len(slugs) > 1
-    ]
+    clashes = [(display[key], found) for key, found in sorted(seen.items()) if len(found) > 1]
+    if not clashes:
+        return
+
+    for name, found in clashes:
+        where = ", ".join(dances[i]["names"][0] for i in found)
+        print(
+            f"dances.md: the name {name!r} is used by {len(found)} dances ({where}). "
+            "Qualify each one, for example with its suite.",
+            file=sys.stderr,
+        )
+    raise SystemExit(1)
 
 
 def main() -> int:
@@ -214,27 +244,29 @@ def main() -> int:
         print("dances.md contains no dances", file=sys.stderr)
         return 1
 
+    # Before any slug work: a duplicate name is a property of the markdown, and letting one
+    # reach the lock writes a mapping that outlives the run that made it.
+    check_names_are_unique(dances)
+
     lock: dict[str, str] = {}
     if LOCK.exists():
         lock = json.loads(LOCK.read_text(encoding="utf-8"))
 
     taken = set(lock.values())
+    assigned: dict[str, dict] = {}
     # Groups first: a dance that has to be qualified needs its group's slug to exist.
-    assign_slugs(groups, "group", lock, taken)
-    assign_slugs(dances, "dance", lock, taken)
+    assign_slugs(groups, "group", lock, taken, assigned)
+    assign_slugs(dances, "dance", lock, taken, assigned)
 
     for group in groups:
         group["dances"] = [d["slug"] for d in group["dances"]]
 
-    ambiguous = find_ambiguous(dances)
-
     document = {
         # Bumped only when the shape changes in a way that would break a consumer, so an
         # application embedding this file can refuse a version it does not understand.
-        "formatVersion": 1,
+        "formatVersion": 2,
         "dances": dances,
         "groups": groups,
-        "ambiguousNames": ambiguous,
     }
 
     # No timestamp anywhere on purpose: a generated file that changes on every run would
@@ -247,9 +279,7 @@ def main() -> int:
         encoding="utf-8",
     )
 
-    print(f"{len(dances)} dances, {len(groups)} groups, {len(ambiguous)} ambiguous names")
-    for entry in ambiguous:
-        print(f"  ambiguous: {entry['name']} -> {', '.join(entry['dances'])}")
+    print(f"{len(dances)} dances, {len(groups)} groups")
 
     return 0
 

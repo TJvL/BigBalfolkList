@@ -70,9 +70,9 @@ Danced across the whole scene rather than belonging to one tradition.
 
 ### Suite montagne  {gavotte, suite}
 
-- Gavotte des montagnes / Ton simpl / Ton kentan
+- Gavotte des montagnes / Ton simpl (montagne) / Ton kentan
 - Tamm kreiz / Bal gavotte
-- Ton doubl / Ton diverzhan
+- Ton doubl (montagne) / Ton diverzhan
 
 ### Suite de l'Aven  {gavotte, suite}
 
@@ -82,15 +82,15 @@ Danced across the whole scene rather than belonging to one tradition.
 
 ### Suite fisel  {gavotte, suite}
 
-- Dañs fisel / Ton simpl
+- Dañs fisel / Ton simpl (fisel)
 - Bal fisel
-- Ton doubl
+- Ton doubl (fisel)
 
 ### Suite plinn  {suite}
 
-- Dañs plinn / Ton simpl
+- Dañs plinn / Ton simpl (plinn)
 - Bal plinn
-- Ton doubl
+- Ton doubl (plinn)
 
 ### Suite de Loudéac  {suite}
 

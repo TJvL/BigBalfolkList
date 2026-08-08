@@ -1,5 +1,5 @@
 {
-  "formatVersion": 1,
+  "formatVersion": 2,
   "dances": [
     {
       "slug": "scottish",
@@ -425,7 +425,7 @@
       "slug": "gavotte-des-montagnes",
       "names": [
         "Gavotte des montagnes",
-        "Ton simpl",
+        "Ton simpl (montagne)",
         "Ton kentan"
       ],
       "region": "Bretagne (France)",
@@ -449,9 +449,9 @@
       ]
     },
     {
-      "slug": "ton-doubl",
+      "slug": "ton-doubl-montagne",
       "names": [
-        "Ton doubl",
+        "Ton doubl (montagne)",
         "Ton diverzhan"
       ],
       "region": "Bretagne (France)",
@@ -501,7 +501,7 @@
       "slug": "dans-fisel",
       "names": [
         "Dañs fisel",
-        "Ton simpl"
+        "Ton simpl (fisel)"
       ],
       "region": "Bretagne (France)",
       "family": null,
@@ -523,9 +523,9 @@
       ]
     },
     {
-      "slug": "ton-doubl-suite-fisel",
+      "slug": "ton-doubl-fisel",
       "names": [
-        "Ton doubl"
+        "Ton doubl (fisel)"
       ],
       "region": "Bretagne (France)",
       "family": null,
@@ -538,7 +538,7 @@
       "slug": "dans-plinn",
       "names": [
         "Dañs plinn",
-        "Ton simpl"
+        "Ton simpl (plinn)"
       ],
       "region": "Bretagne (France)",
       "family": null,
@@ -556,9 +556,9 @@
       "tags": []
     },
     {
-      "slug": "ton-doubl-suite-plinn",
+      "slug": "ton-doubl-plinn",
       "names": [
-        "Ton doubl"
+        "Ton doubl (plinn)"
       ],
       "region": "Bretagne (France)",
       "family": null,
@@ -1257,7 +1257,7 @@
       "dances": [
         "gavotte-des-montagnes",
         "tamm-kreiz",
-        "ton-doubl"
+        "ton-doubl-montagne"
       ]
     },
     {
@@ -1289,7 +1289,7 @@
       "dances": [
         "dans-fisel",
         "bal-fisel",
-        "ton-doubl-suite-fisel"
+        "ton-doubl-fisel"
       ]
     },
     {
@@ -1303,7 +1303,7 @@
       "dances": [
         "dans-plinn",
         "bal-plinn",
-        "ton-doubl-suite-plinn"
+        "ton-doubl-plinn"
       ]
     },
     {
@@ -1414,24 +1414,6 @@
       "dances": [
         "mutxiko",
         "zazpi-jautzi"
-      ]
-    }
-  ],
-  "ambiguousNames": [
-    {
-      "name": "Ton doubl",
-      "dances": [
-        "ton-doubl",
-        "ton-doubl-suite-fisel",
-        "ton-doubl-suite-plinn"
-      ]
-    },
-    {
-      "name": "Ton simpl",
-      "dances": [
-        "gavotte-des-montagnes",
-        "dans-fisel",
-        "dans-plinn"
       ]
     }
   ]
