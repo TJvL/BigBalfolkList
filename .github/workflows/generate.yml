@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: generate-${{ github.ref }}
@@ -38,19 +39,36 @@ jobs:
       # non-zero and the check fails, so nothing that cannot be converted reaches main.
       # Nothing is committed either, which is what lets a pull request from a fork run
       # with no write access at all.
-      - name: Commit the generated files
+      #
+      # After a merge, the regenerated files arrive as their own pull request rather than
+      # as a push. Main requires a pull request, and GitHub only lets Actions bypass that
+      # on a paid organization plan, so the bot follows the same rule as everyone else.
+      - name: Open a regeneration pull request
         if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [ -z "$(git status --porcelain dances.json slugs.lock.json)" ]; then
             echo "Already up to date."
             exit 0
           fi
 
+          BRANCH="chore/regenerate-${GITHUB_RUN_ID}"
+
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH"
           git add dances.json slugs.lock.json
           git commit -m 'chore: regenerate dances.json'
-          git push
+          git push origin "$BRANCH"
 
-      # A push made with GITHUB_TOKEN does not start another workflow run, so the commit
-      # above cannot loop back into this job.
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title 'chore: regenerate dances.json' \
+            --body 'Generated from dances.md by the Generate workflow. Nothing here was written by hand.'
+
+          gh pr merge "$BRANCH" --merge --delete-branch
+
+      # A push made with GITHUB_TOKEN does not start another workflow run, so merging the
+      # pull request above cannot loop back into this job.
