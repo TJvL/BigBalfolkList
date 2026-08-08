@@ -132,6 +132,7 @@ Berry and Bourbonnais.
 - Congo de Captieux
 - Congo de Luxieu
 - Branle béarnais / Branle d'Ossau / Branle de Vallée d'Ossau
+- Branlou
 
 ### Rondeau  {rondeau}
 
