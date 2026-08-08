@@ -10,9 +10,16 @@ on:
       - dances.md
       - scripts/**
       - .github/workflows/generate.yml
-  # Deliberately unfiltered. This job is a required check, and a required check that is
-  # skipped never reports, which would leave every unrelated pull request blocked forever.
+  # Filtered to the hand-written files. The generated ones are excluded on purpose: the
+  # bot's own regeneration pull request touches nothing else, so it starts no run, which
+  # avoids leaving a run stuck "awaiting approval" forever on a pull request that has
+  # already merged. Safe only because this check is not a required one; a required check
+  # that never reports would block every pull request that did not touch these paths.
   pull_request:
+    paths:
+      - dances.md
+      - scripts/**
+      - .github/workflows/generate.yml
   workflow_dispatch:
 
 permissions:
