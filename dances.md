@@ -25,36 +25,36 @@ nobody has filled it in yet, not that it has no formation.
 Danced across the whole scene rather than belonging to one tradition.
 
 - Scottish / Schottische / Escoticha  {couple}
-- Scottish impair  {couple}
-- Mazurka  {couple}
+- Scottish impair / Scottish impaire  {couple}
+- Mazurka / Mazurca / Masurka  {couple}
 - Polka  {couple}
 - Polka piquée  {couple, choreographed}
-- Chapelloise / Jig / Gigue  {mixer}
-- Cercle Circassien / Circassian Circle  {mixer}
+- Chapelloise / Jig / Gigue / Chapeloise  {mixer}
+- Cercle Circassien / Circassian Circle / Circassien  {mixer}
 - Zelda  {mixer}
 
 ### Waltzes  {waltz}
 
-- Waltz in 3 / Valse à 3 temps  {couple}
-- Waltz in 5 / Valse à 5 temps  {couple}
-- Waltz in 8 / Valse à 8 temps  {couple}
-- Waltz in 11 / Valse à 11 temps  {couple}
+- Waltz in 3 / Valse à 3 temps / Waltz 3 / Valse 3 / Wals in 3 / Wals 3 / Wals / Vals / Valse / Waltz  {couple}
+- Waltz in 5 / Valse à 5 temps / Waltz 5 / Valse 5 / Wals in 5 / Wals 5  {couple}
+- Waltz in 8 / Valse à 8 temps / Waltz 8 / Valse 8 / Wals in 8 / Wals 8  {couple}
+- Waltz in 11 / Valse à 11 temps / Waltz 11 / Valse 11 / Wals in 11 / Wals 11  {couple}
 
 ## Bretagne (France)
 
 - An dro / En dro / Andro
 - An dro retourné
 - Hanter dro / Hanterdro
-- Hanter dro klamm
+- Hanter dro klamm / Hanterdro klamm
 - Tour
 - Tricot / Trikot
 - Kejaj / Keijaj
 - Kost ar c'hoad / Kost ar c'hoat
 - Gavotte du Bas Leon  {gavotte}
 - Laridé / Laridée
-- Ridée 6 temps
+- Ridée 6 temps / Ridée 6
 - Ridée de Josselin
-- Rond de Saint-Vincent
+- Rond de Saint-Vincent / Rond de St Vincent
 - Pilé-menu
 - Rond paludier
 - Bal paludier
@@ -119,12 +119,13 @@ Berry and Bourbonnais.
 
 ### Bourrée  {bourree}
 
-- Bourrée 2 temps
-- Bourrée 3 temps
-- Bourrée 3 temps de Berry
-- Bourrée 3 temps Auvergnate
+- Bourrée 2 temps / Bourrée à 2 temps / Bourrée in 2 / Bourrée 2 / Bourrée 2t
+- Bourrée 3 temps / Bourrée à 3 temps / Bourrée in 3 / Bourrée 3 / Bourrée 3t
+- Bourrée 3 temps de Berry / Bourrée de Berry
+- Bourrée 3 temps Auvergnate / Bourrée auvergnate
 - Bourrée en cercle
 - Bourrée de Chambérat
+- Bourrée planière
 
 ## Gascogne, Béarn & Quercy (France)
 
@@ -147,7 +148,7 @@ Berry and Bourbonnais.
 - Avant-deux à quatre figures  {avant-deux}
 - Pas d'été
 - Branle de Noirmoutier / Branle de l'Epines
-- Ronde de Barbatre
+- Ronde de Barbatre / Rond de Barbatre
 - Marchoise
 - Bal Limousine
 - Rond de l'Île d'Yeu
@@ -198,7 +199,9 @@ Berry and Bourbonnais.
 - Branle de la Fosse aux Loups
 - Aacho
 - Grabbelton
-- Gavotte Grenoble  {gavotte}
+- Reel
+- Forró
+- Gavotte Grenoble / Gavotte de Grenoble  {gavotte}
 - Madison
 - Tzadik Katamar
 - Branle d'Ecosse

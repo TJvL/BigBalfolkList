@@ -33,12 +33,23 @@ TAGS = re.compile(r"\{([^}]*)\}")
 def fold(value: str) -> str:
     """Normalise a name for comparison: no accents, no case, no punctuation.
 
-    The same folding the consumers use when matching a filename against the list, so
-    "Kost ar c'hoad" and "kost ar choad" are one key.
+    This must agree exactly with what consumers do, or a name matches here and not there.
+    Ready4Balfolk's StringNormalizer implements the same three rules.
+
+    Apostrophes and hyphens have to be treated differently, and getting either wrong costs
+    real matches:
+
+    - An apostrophe joins a word, so it is removed. "Kost ar c'hoad" has to fold to
+      "kost ar choad", which is what people type; turning it into a space gives
+      "kost ar c hoad", which matches nothing.
+    - A hyphen separates words, so it becomes a space. "Pilé-menu" has to fold to
+      "pile menu"; removing it gives "pilemenu", which again matches nothing.
     """
     decomposed = unicodedata.normalize("NFD", value.strip().lower())
     stripped = "".join(c for c in decomposed if unicodedata.category(c) != "Mn")
-    return re.sub(r"[^a-z0-9]+", " ", stripped).strip()
+    joined = re.sub(r"['’ʼ´`]", "", stripped)
+    spaced = "".join(c if c.isalnum() or c.isspace() else " " for c in joined)
+    return re.sub(r"\s+", " ", spaced).strip()
 
 
 def slugify(value: str) -> str:
