@@ -10,10 +10,9 @@ on:
       - dances.md
       - scripts/**
       - .github/workflows/generate.yml
+  # Deliberately unfiltered. This job is a required check, and a required check that is
+  # skipped never reports, which would leave every unrelated pull request blocked forever.
   pull_request:
-    paths:
-      - dances.md
-      - scripts/**
   workflow_dispatch:
 
 permissions:
@@ -36,8 +35,9 @@ jobs:
         run: python3 scripts/convert.py
 
       # On a pull request the run above is the check: a malformed dances.md exits
-      # non-zero and the check fails. Nothing is committed, which also means a pull
-      # request from a fork needs no write access.
+      # non-zero and the check fails, so nothing that cannot be converted reaches main.
+      # Nothing is committed either, which is what lets a pull request from a fork run
+      # with no write access at all.
       - name: Commit the generated files
         if: github.event_name == 'push'
         run: |
