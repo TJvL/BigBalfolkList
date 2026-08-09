@@ -5,13 +5,14 @@
 
 import { $, button, el } from "./dom.js";
 import { fold, slugify } from "./fold.js";
-import { since } from "./draft.js";
+import { draftSummary, since } from "./draft.js";
 import { createStore } from "./store.js";
 import { matches, renderCard, renderCloud } from "./browse.js";
 import { bulkBar, familyDialog, renderOpenCard } from "./editor.js";
 import { renderTags } from "./tags.js";
 import * as github from "./github.js";
 import * as config from "./config.js";
+import { canonical } from "./canonical.js";
 
 const ui = {
   editing: false,
@@ -161,6 +162,7 @@ function render() {
     main.append(el("div", "empty", "Nothing under that combination. Try any instead of all."));
   }
 
+  refreshSourceLabels();
   renderCloud($("cloud"), store, ui, actions);
   $("clear").hidden = ui.selected.size === 0;
 
@@ -514,6 +516,19 @@ function wire() {
   $("mode-browse").addEventListener("click", () => setMode(false));
   $("mode-edit").addEventListener("click", () => setMode(true));
 
+  $("export").addEventListener("click", () => {
+    // Exactly what the site would commit, so it can be dropped straight into the repository
+    // or fed to anything else that wants the list.
+    const text = canonical(store.list);
+    const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "dances.json";
+    link.click();
+    URL.revokeObjectURL(url);
+  });
+
   $("source").addEventListener("change", async (event) => {
     const chosen = openSuggestions.find((s) => String(s.number) === event.target.value);
     try {
@@ -609,25 +624,43 @@ async function load(suggestion) {
   renderResumed();
 }
 
+const sourceOf = (value) => (value === "main" ? "main" : `pull-${value}`);
+
+/**
+ * A version with unsent changes is marked, so nothing is left behind by accident.
+ * Labels are rewritten in place rather than rebuilding the menu, which would fight anyone
+ * who has it open.
+ */
+function refreshSourceLabels() {
+  for (const option of $("source").options) {
+    const waiting = draftSummary(sourceOf(option.value));
+    const label = option.dataset.label;
+    const trimmed = label.length > 40 ? label.slice(0, 39) + "…" : label;
+    option.textContent = waiting ? `• ${trimmed} — ${waiting.count} unsent` : trimmed;
+  }
+}
+
 function renderSource() {
   const select = $("source");
   select.replaceChildren();
 
-  const published = new Option("the published list", "main", true, !store.suggestion);
+  const published = new Option("", "main", true, !store.suggestion);
+  published.dataset.label = "the published list";
   select.append(published);
 
   for (const suggestion of openSuggestions) {
-    const label = `#${suggestion.number} · ${suggestion.title}`;
-    select.append(
-      new Option(
-        label.length > 34 ? label.slice(0, 33) + "…" : label,
-        String(suggestion.number),
-        false,
-        store.suggestion?.number === suggestion.number,
-      ),
+    // Whose it is comes before what it says: two people's suggestions otherwise read alike.
+    const option = new Option(
+      "",
+      String(suggestion.number),
+      false,
+      store.suggestion?.number === suggestion.number,
     );
+    option.dataset.label = `#${suggestion.number} · ${suggestion.author} · ${suggestion.title}`;
+    select.append(option);
   }
 
+  refreshSourceLabels();
   $("viewing").hidden = openSuggestions.length === 0;
 }
 
