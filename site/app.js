@@ -5,7 +5,7 @@
 
 import { $, button, el } from "./dom.js";
 import { fold, slugify } from "./fold.js";
-import { since } from "./draft.js";
+import { draftSummary, since } from "./draft.js";
 import { createStore } from "./store.js";
 import { matches, renderCard, renderCloud } from "./browse.js";
 import { bulkBar, familyDialog, renderOpenCard } from "./editor.js";
@@ -162,6 +162,7 @@ function render() {
     main.append(el("div", "empty", "Nothing under that combination. Try any instead of all."));
   }
 
+  refreshSourceLabels();
   renderCloud($("cloud"), store, ui, actions);
   $("clear").hidden = ui.selected.size === 0;
 
@@ -623,26 +624,43 @@ async function load(suggestion) {
   renderResumed();
 }
 
+const sourceOf = (value) => (value === "main" ? "main" : `pull-${value}`);
+
+/**
+ * A version with unsent changes is marked, so nothing is left behind by accident.
+ * Labels are rewritten in place rather than rebuilding the menu, which would fight anyone
+ * who has it open.
+ */
+function refreshSourceLabels() {
+  for (const option of $("source").options) {
+    const waiting = draftSummary(sourceOf(option.value));
+    const label = option.dataset.label;
+    const trimmed = label.length > 40 ? label.slice(0, 39) + "…" : label;
+    option.textContent = waiting ? `• ${trimmed} — ${waiting.count} unsent` : trimmed;
+  }
+}
+
 function renderSource() {
   const select = $("source");
   select.replaceChildren();
 
-  const published = new Option("the published list", "main", true, !store.suggestion);
+  const published = new Option("", "main", true, !store.suggestion);
+  published.dataset.label = "the published list";
   select.append(published);
 
   for (const suggestion of openSuggestions) {
     // Whose it is comes before what it says: two people's suggestions otherwise read alike.
-    const label = `#${suggestion.number} · ${suggestion.author} · ${suggestion.title}`;
-    select.append(
-      new Option(
-        label.length > 40 ? label.slice(0, 39) + "…" : label,
-        String(suggestion.number),
-        false,
-        store.suggestion?.number === suggestion.number,
-      ),
+    const option = new Option(
+      "",
+      String(suggestion.number),
+      false,
+      store.suggestion?.number === suggestion.number,
     );
+    option.dataset.label = `#${suggestion.number} · ${suggestion.author} · ${suggestion.title}`;
+    select.append(option);
   }
 
+  refreshSourceLabels();
   $("viewing").hidden = openSuggestions.length === 0;
 }
 
