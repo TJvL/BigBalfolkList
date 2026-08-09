@@ -2,6 +2,9 @@
 
 A list of all the Balfolk dances that are being danced in some way on the scene today!
 
+Every dance, every name it goes by, and no opinion about which of those names is the right one.
+Free for anything to use.
+
 ## Contributing
 
 Use **[the site](https://tjvl.github.io/BigBalfolkList/)**. It shows the whole list, lets you
@@ -12,6 +15,9 @@ nothing installed.
 Your work is kept in your own browser as you go, so you can close the tab and come back to it.
 When you are ready, the site can open a pull request for you if you have a GitHub account, or
 write up what you changed as an issue if you would rather not have one.
+
+You can also read anyone's open suggestion from the same page, and continue your own if
+somebody asks you to change something in it.
 
 If you would rather edit [`dances.json`](dances.json) by hand, that works too. It is the only
 file the list lives in.
@@ -43,6 +49,34 @@ is danced as part of a suite: all tags, so a dance can be Breton *and* a gavotte
 a suite without being filed under one of them. Every tag a dance carries has to appear in the
 `tags` list at the top of the file, which is also where a tag can sit with nothing on it yet.
 
+## Using the list
+
+Take the file and ship it. It is CC0, so no attribution notice and no lawyer.
+
+```
+https://raw.githubusercontent.com/TJvL/BigBalfolkList/main/dances.json
+```
+
+Store the **slug**, never a name. Names get corrected, respelled and added to; slugs do not
+move and are never withdrawn.
+
+### Matching a name people typed
+
+Compare folded names, or you will miss matches that are obviously the same word to a human.
+Three rules, and each one costs real matches if you get it backwards:
+
+| Rule | Example |
+| --- | --- |
+| An apostrophe **joins**, so it is removed | `Kost ar c'hoad` → `kost ar choad` |
+| Every other mark **separates**, so it becomes a space | `Pilé-menu` → `pile menu` |
+| Accents and case are ignored, runs of space collapse | `Valse à 3 temps` → `valse a 3 temps` |
+
+Removing the hyphen too would give `pilemenu`, and turning the apostrophe into a space would
+give `kost ar c hoad`. Neither matches anything anybody types.
+
+Reference implementations to copy: [`scripts/validate.py`](scripts/validate.py) in Python and
+[`site/fold.js`](site/fold.js) in JavaScript. They agree, and a test keeps them agreeing.
+
 ## The file's shape
 
 `dances.json` is written one dance per line, sorted by slug, with tags sorted inside each
@@ -56,18 +90,28 @@ The build checks the shape as well as the contents, so if you edit by hand:
 python3 scripts/validate.py --fix    # puts the file back in shape
 python3 scripts/validate.py          # says yes or no
 python3 scripts/test_validate.py     # the validator's own tests
+node scripts/check_canonical.mjs     # the site writes what the validator wants
 ```
 
 Nothing to install; any Python 3.11 or newer will do.
 
+## What is in here
+
+| Path | What |
+| --- | --- |
+| `dances.json` | The list. The only file it lives in. |
+| `index.html`, `site/` | The site, served from GitHub Pages. No build step and no dependencies. |
+| `scripts/` | The validator and its tests, run on every pull request. |
+| `worker/` | Twenty lines on Cloudflare that let the site sign someone in to GitHub, and nothing else. |
+
 ## Licence
 
-Two licences, because a list of facts and a script that transforms it are different things.
+Two licences, because a list of facts and the software around it are different things.
 
 | File | Licence | Applies to |
 | --- | --- | --- |
 | [`LICENSE`](LICENSE) | [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) | The dance list and anything generated from it |
-| [`LICENSE-CODE`](LICENSE-CODE) | [MIT](https://opensource.org/licenses/MIT) | The tooling in `scripts/` |
+| [`LICENSE-CODE`](LICENSE-CODE) | [MIT](https://opensource.org/licenses/MIT) | The code: `scripts/`, `site/` and `worker/` |
 
 The list is CC0 so that anyone can ship it inside an application without an attribution notice
 or a lawyer. CC0 also waives the EU database right, which a code licence says nothing about, so
