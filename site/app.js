@@ -25,6 +25,8 @@ const ui = {
 };
 
 let store;
+let openSuggestions = [];
+let editable = true;
 
 const actions = {
   toggleTag(tag) {
@@ -279,11 +281,22 @@ async function renderWhere() {
   where.hidden = true;
   where.replaceChildren();
 
+  // Editing a suggestion: there is nowhere else these could go.
+  if (store.suggestion) {
+    target = store.suggestion;
+    where.append(
+      el("span", "eyebrow", "Where these go"),
+      el("p", "hint", `Onto suggestion #${store.suggestion.number}, which is what you have been editing.`),
+    );
+    where.hidden = false;
+    return;
+  }
+
   if (!github.signedIn()) return;
 
   let mine = [];
   try {
-    mine = await github.mySuggestions();
+    mine = (await github.suggestions()).filter(github.mine);
   } catch (error) {
     return;
   }
@@ -435,7 +448,10 @@ function compare(before, after) {
 // ---------- wiring ----------
 
 function setMode(editing) {
-  ui.editing = editing;
+  // Somebody else's suggestion is theirs to change, so it can be read and nothing else.
+  ui.editing = editing && editable;
+  $("mode-edit").disabled = !editable;
+  $("mode-edit").title = editable ? "" : "Only the person who made this suggestion can change it";
   if (!editing) {
     ui.expanded = null;
     ui.picked.clear();
@@ -497,6 +513,17 @@ function theme() {
 function wire() {
   $("mode-browse").addEventListener("click", () => setMode(false));
   $("mode-edit").addEventListener("click", () => setMode(true));
+
+  $("source").addEventListener("change", async (event) => {
+    const chosen = openSuggestions.find((s) => String(s.number) === event.target.value);
+    try {
+      await load(chosen || null);
+      render();
+    } catch (error) {
+      event.target.value = store.suggestion ? String(store.suggestion.number) : "main";
+      console.error(error);
+    }
+  });
   $("view-dances").addEventListener("click", () => setView("dances"));
   $("view-tags").addEventListener("click", () => setView("tags"));
   $("combine-any").addEventListener("click", () => setCombine("any"));
@@ -560,8 +587,87 @@ function wire() {
   });
 }
 
+/**
+ * Load a version of the list: the published one, or what a suggestion proposes.
+ * Anyone may look at any of them; whether they may change it is decided separately.
+ */
+async function load(suggestion) {
+  store = await createStore(suggestion);
+  editable = await github.mayEdit(suggestion);
+
+  if (!editable) {
+    ui.editing = false;
+    ui.expanded = null;
+    ui.picked.clear();
+  }
+
+  store.subscribe(render);
+  target = suggestion || null;
+  renderSource();
+  renderBranchBanner();
+  setMode(ui.editing && editable);
+  renderResumed();
+}
+
+function renderSource() {
+  const select = $("source");
+  select.replaceChildren();
+
+  const published = new Option("the published list", "main", true, !store.suggestion);
+  select.append(published);
+
+  for (const suggestion of openSuggestions) {
+    const label = `#${suggestion.number} · ${suggestion.title}`;
+    select.append(
+      new Option(
+        label.length > 34 ? label.slice(0, 33) + "…" : label,
+        String(suggestion.number),
+        false,
+        store.suggestion?.number === suggestion.number,
+      ),
+    );
+  }
+
+  $("viewing").hidden = openSuggestions.length === 0;
+}
+
+function renderBranchBanner() {
+  const banner = $("on-branch");
+  const inner = banner.querySelector(".inner");
+  inner.replaceChildren();
+
+  if (!store.suggestion) return (banner.hidden = true);
+
+  const suggestion = store.suggestion;
+  inner.append(
+    el("span", null, `You are looking at suggestion #${suggestion.number}, by ${suggestion.author}, as it currently stands.`),
+  );
+
+  const link = el("a", null, "see it on GitHub");
+  link.href = suggestion.url;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+  inner.append(link);
+
+  inner.append(
+    el(
+      "span",
+      "locked",
+      editable
+        ? "you can change this one"
+        : github.signedIn()
+          ? "read only — it is not yours"
+          : "read only — sign in if it is yours",
+    ),
+  );
+
+  banner.hidden = false;
+}
+
 async function start() {
   try {
+    // Before anything is drawn, so the switcher is complete the first time it appears.
+    openSuggestions = await github.suggestions().catch(() => []);
     store = await createStore();
   } catch (error) {
     $("main").replaceChildren(
@@ -571,9 +677,10 @@ async function start() {
     return;
   }
 
-  store.subscribe(render);
   wire();
   theme();
+  store.subscribe(render);
+  renderSource();
   renderResumed();
   render();
 
@@ -581,7 +688,10 @@ async function start() {
   // the contributor was in the middle of making.
   try {
     if (await github.completeSignIn()) {
-      ui.editing = true;
+      openSuggestions = await github.suggestions().catch(() => []);
+      editable = await github.mayEdit(store.suggestion);
+      renderSource();
+      renderBranchBanner();
       setMode(true);
       if (store.intents.length) openProposal();
     }

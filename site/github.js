@@ -120,22 +120,44 @@ async function fileFrom(repo, ref) {
 
 export const latest = () => fileFrom(`${REPO.owner}/${REPO.name}`, REPO.branch);
 
-/** The contributor's own suggestions that are still open, newest first. */
-export async function mySuggestions() {
-  if (!signedIn()) return [];
-
+/**
+ * Every suggestion still open, newest first. No token needed: the repository is public and
+ * being able to look at what other people are proposing is worth having.
+ */
+export async function suggestions() {
   const open = await api(`/repos/${REPO.owner}/${REPO.name}/pulls?state=open&per_page=100`);
   return (open || [])
-    .filter((pull) => pull.user?.login === user.login && pull.head?.repo)
+    // Only what the site itself made. Pull requests against the code have nothing to say
+    // about the dance list, and a dancer should not have to tell them apart.
+    .filter((pull) => pull.head?.repo && pull.head.ref.startsWith(SUGGESTION_PREFIX))
     .map((pull) => ({
       number: pull.number,
       title: pull.title,
+      author: pull.user?.login,
       branch: pull.head.ref,
       repo: pull.head.repo.full_name,
       url: pull.html_url,
       updated: pull.updated_at,
     }));
 }
+
+export const mine = (suggestion) => signedIn() && suggestion.author === user?.login;
+
+/**
+ * Whether this person may change a suggestion: theirs, or they can push to the repository.
+ * Everyone else can look at it and nothing more.
+ */
+export async function mayEdit(suggestion) {
+  if (!suggestion) return true;
+  if (!signedIn()) return false;
+  if (mine(suggestion)) return true;
+
+  const repo = await api(`/repos/${REPO.owner}/${REPO.name}`);
+  return Boolean(repo?.permissions?.push);
+}
+
+/** The list as one suggestion currently proposes it. */
+export const listFrom = (suggestion) => fileFrom(suggestion.repo, suggestion.branch);
 
 /**
  * Replay a draft onto whatever it is going to be added to.
@@ -176,9 +198,11 @@ async function fork() {
   throw new Error("GitHub is still making your copy of the repository. Try again in a minute.");
 }
 
+const SUGGESTION_PREFIX = "suggestion-";
+
 const branchName = () => {
   const day = new Date().toISOString().slice(0, 10);
-  return `suggestion-${day}-${Math.random().toString(36).slice(2, 6)}`;
+  return `${SUGGESTION_PREFIX}${day}-${Math.random().toString(36).slice(2, 6)}`;
 };
 
 /**
