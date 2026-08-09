@@ -10,6 +10,8 @@ import { createStore } from "./store.js";
 import { matches, renderCard, renderCloud } from "./browse.js";
 import { bulkBar, familyDialog, renderOpenCard } from "./editor.js";
 import { renderTags } from "./tags.js";
+import * as github from "./github.js";
+import * as config from "./config.js";
 
 const ui = {
   editing: false,
@@ -232,9 +234,9 @@ const describeShort = (intent) =>
 const jsonLine = (dance) =>
   "  " + JSON.stringify({ slug: dance.slug, names: dance.names, tags: dance.tags }) + ",";
 
-function buildDiff() {
+function buildDiff(against) {
   const diff = $("diff");
-  const { rows, tagsChanged, before, after } = store.diff();
+  const { rows, tagsChanged, before, after } = against || store.diff();
 
   diff.replaceChildren();
   diff.append(el("span", "file", "dances.json\n"));
@@ -249,6 +251,119 @@ function buildDiff() {
   }
 
   if (!rows.length && !tagsChanged) diff.append(el("span", "file", "(nothing changed)"));
+}
+
+/**
+ * Opening the dialog rebuilds the draft on the list as the server has it this second, so the
+ * line promising exactly that is true rather than decorative.
+ */
+async function openProposal() {
+  const note = $("rebuilt");
+  buildDiff();
+  $("pr-go").disabled = false;
+  $("pr").showModal();
+
+  note.textContent = "Checking the list for changes by other people…";
+  note.classList.remove("bad");
+
+  try {
+    const rebuilt = await github.rebuild(store.intents);
+    buildDiff(compare(rebuilt.before, rebuilt.list));
+    const { stale } = rebuilt;
+    note.textContent = stale.length
+      ? `Rebuilt on the list as it stands right now. ${stale.length} of your changes no longer fit and will be left out.`
+      : "Rebuilt a moment ago on the list as it stands right now, so anything other people changed while you were working is already in.";
+    note.classList.toggle("bad", stale.length > 0);
+  } catch (error) {
+    // Rate limited, or offline. The proposal still works; it is the reassurance that does not.
+    note.textContent = "Could not reach GitHub to check for newer changes. Yours are still fine to send.";
+  }
+}
+
+async function openPullRequest() {
+  const button_ = $("pr-go");
+  const note = $("rebuilt");
+
+  if (!config.canSignIn()) {
+    note.textContent = "This copy of the site has no GitHub app set up yet, so use the other button for now.";
+    note.classList.add("bad");
+    return;
+  }
+
+  button_.disabled = true;
+  try {
+    if (!github.signedIn()) {
+      // Leaves the page. The draft is in localStorage, so it is waiting on the way back.
+      github.signIn();
+      return;
+    }
+
+    button_.textContent = "Opening…";
+    const { opened, stale } = await github.propose(store.intents);
+
+    if (!opened) {
+      note.textContent = "None of your changes still apply to the list. Nothing was sent.";
+      note.classList.add("bad");
+      return;
+    }
+
+    store.discard();
+    $("pr").close();
+    showOpened(opened.html_url, stale.length);
+  } catch (error) {
+    note.textContent = error.message;
+    note.classList.add("bad");
+  } finally {
+    button_.disabled = false;
+    button_.textContent = "Open pull request";
+  }
+}
+
+function showOpened(url, leftOut) {
+  const banner = $("resumed");
+  banner.replaceChildren();
+  banner.append(el("p", null, "Sent. Thank you."));
+
+  const link = el("a", null, url.split("/").slice(-2).join(" #").replace("pull #", "pull request #"));
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+
+  const line = el("p", null, "Someone will look at it: ");
+  line.append(link);
+  banner.append(line);
+
+  if (leftOut) {
+    banner.append(el("p", "stale-head", `${leftOut} changes were left out because the list had moved on.`));
+  }
+
+  banner.append(button("btn quiet", "Got it", () => (banner.hidden = true)));
+  banner.hidden = false;
+}
+
+/** The same shape store.diff() returns, for any two versions of the list. */
+function compare(before, after) {
+  const was = new Map(before.dances.map((d) => [d.slug, d]));
+  const is = new Map(after.dances.map((d) => [d.slug, d]));
+  const same = (a, b) =>
+    a && b && a.names.join("|") === b.names.join("|") && a.tags.join("|") === b.tags.join("|");
+
+  const rows = [];
+  for (const [slug, dance] of is) {
+    if (same(was.get(slug), dance)) continue;
+    if (was.has(slug)) rows.push({ kind: "del", dance: was.get(slug) });
+    rows.push({ kind: "add", dance });
+  }
+  for (const [slug, dance] of was) {
+    if (!is.has(slug)) rows.push({ kind: "del", dance });
+  }
+
+  return {
+    rows,
+    tagsChanged: before.tags.join("|") !== after.tags.join("|"),
+    before: before.tags,
+    after: after.tags,
+  };
 }
 
 // ---------- wiring ----------
@@ -368,17 +483,15 @@ function wire() {
     store.discard();
   });
 
-  $("propose").addEventListener("click", () => {
-    buildDiff();
-    $("pr").showModal();
-  });
+  $("propose").addEventListener("click", openProposal);
   $("pr-cancel").addEventListener("click", () => $("pr").close());
+  $("pr-go").addEventListener("click", openPullRequest);
 
-  // Both paths arrive in stage 4: one opens a pull request, one opens an issue for people
-  // without a GitHub account. Until then the dialog is the honest end of the flow.
-  for (const id of ["pr-go", "pr-issue"]) {
-    $(id).addEventListener("click", () => $("pr").close());
-  }
+  $("pr-issue").addEventListener("click", () => {
+    // No sign-in, no fork, no branch: the words go to a maintainer to apply.
+    window.open(github.issueUrl(store.intents), "_blank", "noreferrer");
+    $("pr").close();
+  });
 }
 
 async function start() {
@@ -397,6 +510,18 @@ async function start() {
   theme();
   renderResumed();
   render();
+
+  // Coming back from GitHub: finish the sign-in, then carry straight on to the pull request
+  // the contributor was in the middle of making.
+  try {
+    if (await github.completeSignIn()) {
+      ui.editing = true;
+      setMode(true);
+      if (store.intents.length) openProposal();
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 start();

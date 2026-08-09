@@ -4,9 +4,14 @@ A list of all the Balfolk dances that are being danced in some way on the scene 
 
 ## Contributing
 
-Use the site. It shows the whole list, lets you add a spelling, fix one, tag a dance or add a
-dance that is missing, and turns what you did into a proposal for someone to look at. Nothing
-you do goes live on its own, and you need nothing installed.
+Use **[the site](https://tjvl.github.io/BigBalfolkList/)**. It shows the whole list, lets you
+add a spelling, fix one, tag a dance or add a dance that is missing, and turns what you did
+into a proposal for someone to look at. Nothing you do goes live on its own, and you need
+nothing installed.
+
+Your work is kept in your own browser as you go, so you can close the tab and come back to it.
+When you are ready, the site can open a pull request for you if you have a GitHub account, or
+write up what you changed as an issue if you would rather not have one.
 
 If you would rather edit [`dances.json`](dances.json) by hand, that works too. It is the only
 file the list lives in.

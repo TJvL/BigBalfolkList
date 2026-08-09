@@ -948,3 +948,7 @@
   font-size: 0.75rem;
   color: var(--muted);
 }
+
+.rebuilt.bad { color: var(--accent); }
+
+.resumed a { color: var(--accent); }
