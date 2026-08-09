@@ -181,10 +181,93 @@ export function renderOpenCard(card, store, dance, actions) {
       "p",
       "hint",
       dance.isNew
-        ? "The short name at the top is worked out from the first spelling once this is merged."
+        ? "The short name at the top was worked out from the first spelling you gave, and is now fixed. Every other spelling you add sits beside it as an equal."
         : "The short name at the top never changes, even if every spelling below is rewritten. That is what lets apps keep following this dance.",
     ),
   );
+}
+
+/**
+ * Adding a dance asks for its name first.
+ *
+ * The short name is worked out from the first spelling and then never changes, so there is
+ * exactly one moment at which it can be got right, and it is this one. Adding the dance first
+ * and naming it afterwards leaves the wrong slug behind for good.
+ */
+export function newDanceDialog(dialog, store, created) {
+  const body = dialog.querySelector(".dialog-body");
+  body.replaceChildren();
+
+  body.append(el("h2", null, "Add a dance"));
+  body.append(
+    el(
+      "p",
+      null,
+      "Give the name you know it by. Its short name is worked out from that and then never " +
+        "changes, so other spellings can be added afterwards without anything breaking.",
+    ),
+  );
+
+  const field = el("div", "field");
+  field.append(el("span", "eyebrow", "Its name"));
+
+  const input = el("input", "name-of");
+  input.type = "text";
+  input.placeholder = "Rondeau de Samatan…";
+  input.setAttribute("aria-label", "The name of the dance");
+  field.append(input);
+
+  const note = el("p", "note idle", "Whichever spelling you give is as good as any other.");
+  field.append(note);
+  body.append(field);
+
+  const look = (value) => {
+    if (!value) return { quiet: true };
+
+    const owner = store.ownerOf(value, null);
+    if (owner) {
+      return {
+        ok: false,
+        message: `“${value}” already names ${owner.names[0]}, so that dance is already on the list.`,
+      };
+    }
+    if (!slugify(value)) return { ok: false, message: "A name needs a letter or a number in it." };
+
+    return { ok: true, message: `Its short name will be ${store.freeSlug(slugify(value))}.` };
+  };
+
+  const add = button("btn primary", "Add it", () => {
+    const value = input.value.trim();
+    if (!look(value).ok) return;
+
+    const slug = store.freeSlug(slugify(value));
+    store.run({ op: "dance.add", slug, names: [value], tags: [] });
+    dialog.close();
+    created(slug);
+  });
+  add.disabled = true;
+
+  input.addEventListener("input", () => {
+    const result = look(input.value.trim());
+    note.className = "note " + (result.quiet ? "idle" : result.ok ? "ok" : "bad");
+    note.textContent = result.quiet
+      ? "Whichever spelling you give is as good as any other."
+      : result.message;
+    add.disabled = !result.ok;
+  });
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    add.click();
+  });
+
+  const foot = el("div", "dialog-foot");
+  foot.append(button("btn", "Cancel", () => dialog.close()), add);
+  body.append(foot);
+
+  dialog.showModal();
+  input.focus();
 }
 
 export function bulkBar(store, picked, actions) {

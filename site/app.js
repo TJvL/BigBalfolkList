@@ -4,11 +4,11 @@
 // intent and saves the draft, so nothing here has to remember to keep those in step.
 
 import { $, button, el } from "./dom.js";
-import { fold, slugify } from "./fold.js";
+import { fold } from "./fold.js";
 import { draftSummary, since } from "./draft.js";
 import { createStore } from "./store.js";
 import { matches, renderCard, renderCloud } from "./browse.js";
-import { bulkBar, familyDialog, renderOpenCard } from "./editor.js";
+import { bulkBar, familyDialog, newDanceDialog, renderOpenCard } from "./editor.js";
 import { renderTags } from "./tags.js";
 import * as github from "./github.js";
 import * as config from "./config.js";
@@ -62,6 +62,7 @@ const actions = {
 function card(dance, index) {
   const open = ui.editing && ui.expanded === dance.slug;
   const node = el("article", "card");
+  node.dataset.slug = dance.slug;
   node.style.animationDelay = Math.min(index, 24) * 8 + "ms";
   if (open) node.classList.add("open");
   if (ui.picked.has(dance.slug)) node.classList.add("picked");
@@ -71,9 +72,7 @@ function card(dance, index) {
   const identity = el("span", "slug-text", dance.slug);
   identity.title = dance.slug;
   slug.append(identity);
-  if (open) {
-    slug.append(el("span", "fixed", dance.isNew ? "name settled when merged" : "permanent"));
-  }
+  if (open) slug.append(el("span", "fixed", "permanent"));
   node.append(slug);
 
   if (ui.editing) {
@@ -118,6 +117,22 @@ function card(dance, index) {
   else renderCard(node, store, dance, ui, actions);
 
   return node;
+}
+
+/**
+ * Go to a card and put the cursor in it.
+ *
+ * The list is sorted by short name, so a dance added at the top of the alphabet or the bottom
+ * lands wherever it belongs — which, on a page this long, is usually off screen. Without this
+ * the only sign that anything happened is the change count ticking up.
+ */
+function reveal(slug) {
+  requestAnimationFrame(() => {
+    const card = document.querySelector(`.card[data-slug="${CSS.escape(slug)}"]`);
+    if (!card) return;
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.querySelector(".token-input")?.focus({ preventScroll: true });
+  });
 }
 
 function touched(dance) {
@@ -274,19 +289,27 @@ function buildDiff(against) {
 /** Which open pull request these changes join, or none for a fresh one. */
 let target = null;
 
-async function openProposal() {
+async function openProposal(options = {}) {
   buildDiff();
   $("pr-go").disabled = false;
+  $("pr-go").textContent = goLabel();
   $("pr").showModal();
 
-  await renderWhere();
+  const choice = await renderWhere();
   await refreshProposal();
+
+  // Coming back from signing in, the press that sent us there still stands. Carrying on
+  // finishes what was asked for, unless signing in has just revealed a question only the
+  // contributor can answer: which of their open suggestions these changes belong to.
+  if (options.send && !choice) await openPullRequest();
 }
 
 /**
  * Somebody with a suggestion still open usually means the follow-up to belong to it. Offering
  * both beats guessing: a second pull request is right when the subjects are unrelated, and
  * wrong when it is more of the same.
+ *
+ * Says whether it actually asked anything, so nothing sends over the top of a question.
  */
 async function renderWhere() {
   const where = $("where");
@@ -301,18 +324,18 @@ async function renderWhere() {
       el("p", "hint", `Onto suggestion #${store.suggestion.number}, which is what you have been editing.`),
     );
     where.hidden = false;
-    return;
+    return false;
   }
 
-  if (!github.signedIn()) return;
+  if (!github.signedIn()) return false;
 
   let mine = [];
   try {
     mine = (await github.suggestions()).filter(github.mine);
   } catch (error) {
-    return;
+    return false;
   }
-  if (!mine.length) return;
+  if (!mine.length) return false;
 
   target = mine[0];
   where.append(el("span", "eyebrow", "Where these go"));
@@ -344,6 +367,17 @@ async function renderWhere() {
 
   where.append(group);
   where.hidden = false;
+  return true;
+}
+
+/**
+ * What the button will do, said before it does it. Signing in leaves the page, and a button
+ * that promised a pull request instead of saying so reads as the press having done nothing.
+ */
+function goLabel() {
+  const send = target ? `add to #${target.number}` : "open pull request";
+  const label = github.signedIn() ? send : `sign in and ${send}`;
+  return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 /** Rebuild the diff against whatever the changes are going to be added to. */
@@ -351,6 +385,7 @@ async function refreshProposal() {
   const note = $("rebuilt");
   note.textContent = "Checking for changes by other people…";
   note.classList.remove("bad");
+  $("pr-go").textContent = goLabel();
 
   try {
     const rebuilt = await github.rebuild(store.intents, target);
@@ -364,14 +399,13 @@ async function refreshProposal() {
       ? `Rebuilt on ${base}. ${stale.length} of your changes no longer fit and will be left out.`
       : `Rebuilt a moment ago on ${base}, so anything that changed while you were working is already in.`;
     note.classList.toggle("bad", stale.length > 0);
-    $("pr-go").textContent = target ? `Add to #${target.number}` : "Open pull request";
   } catch (error) {
     if (error.gone) {
       // Saying "fine to send" here would be a lie: there is nothing left to send it to.
       target = null;
       note.textContent = `${error.message} Your changes are safe, and will open a new suggestion instead.`;
       note.classList.add("bad");
-      $("pr-go").textContent = "Open pull request";
+      $("pr-go").textContent = goLabel();
       return;
     }
     // Rate limited, or offline. The proposal still works; it is the reassurance that does not.
@@ -389,14 +423,20 @@ async function openPullRequest() {
     return;
   }
 
+  if (!github.signedIn()) {
+    // Leaves the page. The draft is in localStorage, so it is waiting on the way back, and
+    // start() reopens this dialog and finishes the send, rather than asking for the press again.
+    note.textContent =
+      "Taking you to GitHub to sign in. Your changes are kept, and this carries straight on afterwards.";
+    note.classList.remove("bad");
+    button_.disabled = true;
+    button_.textContent = "Signing in…";
+    github.signIn();
+    return;
+  }
+
   button_.disabled = true;
   try {
-    if (!github.signedIn()) {
-      // Leaves the page. The draft is in localStorage, so it is waiting on the way back.
-      github.signIn();
-      return;
-    }
-
     button_.textContent = target ? "Adding…" : "Opening…";
     const { opened, stale, added } = await github.propose(store.intents, target);
 
@@ -420,7 +460,7 @@ async function openPullRequest() {
     note.classList.add("bad");
   } finally {
     button_.disabled = false;
-    button_.textContent = target ? `Add to #${target.number}` : "Open pull request";
+    button_.textContent = goLabel();
   }
 }
 
@@ -588,15 +628,16 @@ function wire() {
   });
 
   $("new-dance").addEventListener("click", () => {
-    const names = ["Untitled dance"];
-    const slug = store.freeSlug(slugify(names[0]));
-    store.run({ op: "dance.add", slug, names, tags: [] });
-    ui.expanded = slug;
-    ui.picked.clear();
-    ui.selected.clear();
-    ui.query = "";
-    $("q").value = "";
-    render();
+    newDanceDialog($("new"), store, (slug) => {
+      // Any filter still on would hide the dance that was just added.
+      ui.expanded = slug;
+      ui.picked.clear();
+      ui.selected.clear();
+      ui.query = "";
+      $("q").value = "";
+      render();
+      reveal(slug);
+    });
   });
 
   $("toggle-log").addEventListener("click", () => {
@@ -754,7 +795,7 @@ async function start() {
       renderSource();
       renderBranchBanner();
       setMode(true);
-      if (store.intents.length) openProposal();
+      if (store.intents.length) openProposal({ send: true });
     }
   } catch (error) {
     console.error(error);
