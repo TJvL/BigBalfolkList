@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BigBalfolkList</title>
+<meta name="description" content="Every balfolk dance and every name it goes by, held as equals.">
+<link rel="stylesheet" href="site/app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>%F0%9F%AA%97</text></svg>">
+<script>
+  // Before paint, so a stored choice never flashes the other theme.
+  try {
+    const choice = localStorage.getItem("bigbalfolklist.theme");
+    if (choice === "light" || choice === "dark") {
+      document.documentElement.setAttribute("data-theme", choice);
+    }
+  } catch (error) { /* storage blocked: the system setting stands */ }
+</script>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="wordmark"><span class="big">Big</span>BalfolkList</div>
+
+    <div class="tabs gap" id="views" hidden role="group" aria-label="What to edit">
+      <button type="button" id="view-dances" aria-pressed="true">Dances</button>
+      <button type="button" id="view-tags" aria-pressed="false">Tags</button>
+    </div>
+
+    <div class="search spacer" id="searchbox">
+      <input id="q" type="search" placeholder="Cherchez la danse…" aria-label="Search dance names" autocomplete="off">
+      <button id="qclear" type="button" hidden aria-label="Clear search">✕</button>
+    </div>
+
+    <div class="tally" id="tally"></div>
+
+    <div class="tabs theme" id="theme" role="group" aria-label="Theme">
+      <button type="button" data-theme-choice="system">Auto</button>
+      <button type="button" data-theme-choice="light">Light</button>
+      <button type="button" data-theme-choice="dark">Dark</button>
+    </div>
+
+    <div class="tabs mode" role="group" aria-label="Mode">
+      <button type="button" id="mode-browse" aria-pressed="true">Browse</button>
+      <button type="button" id="mode-edit" aria-pressed="false">Edit</button>
+    </div>
+  </div>
+
+  <div class="strap" id="strap">
+    <p>Every name a dance goes by, side by side as equals. Nobody's spelling is the wrong one.</p>
+  </div>
+</header>
+
+<div class="resumed" id="resumed" hidden></div>
+
+<main class="shell" id="shell">
+  <aside class="rail" id="rail">
+    <div class="rail-head">
+      <span class="eyebrow">Tags</span>
+      <div class="modes" role="group" aria-label="Combine selected tags">
+        <button class="mode" id="combine-any" type="button" aria-pressed="true">any</button>
+        <button class="mode" id="combine-all" type="button" aria-pressed="false">all</button>
+      </div>
+    </div>
+    <div class="cloud" id="cloud"></div>
+    <button class="clear" id="clear" type="button" hidden>Clear filters</button>
+    <p class="rail-note">Sized by how many dances carry the tag. Where a dance comes from, which
+      family it belongs to, whether it is danced as part of a suite — all tags, so a dance never
+      has to be filed under just one of them.</p>
+  </aside>
+
+  <section id="main"></section>
+</main>
+
+<div class="tray" id="tray" hidden>
+  <div class="tray-log" id="tray-log" hidden><ol id="log"></ol></div>
+  <div class="tray-inner">
+    <span class="tray-count" id="tray-count"><b>0</b> changes</span>
+    <span class="draft" id="draft" hidden>draft kept on this computer</span>
+    <button class="btn quiet" type="button" id="toggle-log">Show changes</button>
+    <button class="btn" type="button" id="new-dance">+ New dance</button>
+    <button class="btn" type="button" id="discard" disabled>Discard</button>
+    <button class="btn primary" type="button" id="propose" disabled>Propose changes</button>
+  </div>
+</div>
+
+<dialog id="family"><div class="dialog-body"></div></dialog>
+
+<dialog id="confirm">
+  <div class="dialog-body">
+    <h2>Throw away your changes?</h2>
+    <p id="confirm-what"></p>
+    <p>The draft kept on this computer goes with them. There is no undo, and nothing you have
+      proposed already is affected.</p>
+    <div class="dialog-foot">
+      <button class="btn" type="button" id="confirm-no">Keep editing</button>
+      <button class="btn primary" type="button" id="confirm-yes">Throw them away</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="pr">
+  <div class="dialog-body">
+    <h2>Propose these changes</h2>
+    <p>This opens a pull request against <code>dances.json</code>. Nothing goes live until
+      someone merges it, and the list keeps its full history. You are not editing the site, you
+      are suggesting an edit to the list everyone shares.</p>
+    <p class="rebuilt">Rebuilt a moment ago on the list as it stands right now, so anything other
+      people changed while you were working is already in.</p>
+    <div class="diff" id="diff"></div>
+    <div class="dialog-foot">
+      <button class="btn quiet" type="button" id="pr-issue">I have no GitHub account</button>
+      <button class="btn" type="button" id="pr-cancel">Keep editing</button>
+      <button class="btn primary" type="button" id="pr-go">Open pull request</button>
+    </div>
+  </div>
+</dialog>
+
+<script type="module" src="site/app.js"></script>
+</body>
+</html>
