@@ -36,8 +36,8 @@ def problems(data: dict, baseline: dict | None = None) -> list[str]:
 
 
 class Fold(unittest.TestCase):
-    """The fold rule is shared with every consumer. Each case here is a name that breaks
-    if the rule drifts, so they are worth more than they look."""
+    """The fold rule is shared with the site and with every consumer of the list. Each case
+    here is a name that breaks if the rule drifts, so they are worth more than they look."""
 
     def test_apostrophe_joins_a_word(self):
         self.assertEqual(fold("Kost ar c'hoad"), "kost ar choad")
