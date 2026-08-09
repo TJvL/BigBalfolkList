@@ -2,8 +2,13 @@ name = "bigbalfolklist-auth"
 main = "index.js"
 compatibility_date = "2026-01-01"
 
+workers_dev = true
+# Off deliberately: a preview URL is another public address for the same worker, and this one
+# holds a client secret. One address is enough.
+preview_urls = false
+
 # The client id is public and lives here. The secret is not, and is set with
 #   wrangler secret put GITHUB_CLIENT_SECRET
 # so it never enters the repository.
 [vars]
-GITHUB_CLIENT_ID = ""
+GITHUB_CLIENT_ID = "Ov23litt41m4fV9bEC12"
