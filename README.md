@@ -112,6 +112,7 @@ Two licences, because a list of facts and the software around it are different t
 | --- | --- | --- |
 | [`LICENSE`](LICENSE) | [CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) | The dance list and anything generated from it |
 | [`LICENSE-CODE`](LICENSE-CODE) | [MIT](https://opensource.org/licenses/MIT) | The code: `scripts/`, `site/` and `worker/` |
+| [`site/fonts/`](site/fonts) | [SIL Open Font License](https://openfontlicense.org/) | Source Serif 4 and JetBrains Mono, whose own licences sit beside them |
 
 The list is CC0 so that anyone can ship it inside an application without an attribution notice
 or a lawyer. CC0 also waives the EU database right, which a code licence says nothing about, so
