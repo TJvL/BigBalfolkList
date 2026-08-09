@@ -11,9 +11,9 @@
 export const REPO = { owner: "TJvL", name: "BigBalfolkList", branch: "main" };
 
 /** From Settings → Developer settings → OAuth Apps on GitHub. */
-export const CLIENT_ID = "";
+export const CLIENT_ID = "Ov23litt41m4fV9bEC12";
 
 /** The deployed worker from worker/, e.g. https://bigbalfolklist-auth.<you>.workers.dev */
-export const AUTH_WORKER = "";
+export const AUTH_WORKER = "https://bigbalfolklist-auth.tjvl1987.workers.dev";
 
 export const canSignIn = () => Boolean(CLIENT_ID && AUTH_WORKER);
