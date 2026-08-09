@@ -124,7 +124,7 @@
     padding: 1.1rem 1.75rem 1rem;
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
     gap: 0.6rem 1.25rem;
   }
 
@@ -140,7 +140,6 @@
   .tabs {
     display: flex;
     gap: 0.25rem;
-    align-self: center;
   }
 
   .tabs.gap { border-left: 1px solid var(--line-strong); padding-left: 1.1rem; }
@@ -178,7 +177,6 @@
     position: relative;
     flex: 1 1 14rem;
     max-width: 22rem;
-    align-self: center;
   }
 
   .search input {
@@ -218,7 +216,6 @@
     color: var(--muted);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-    align-self: center;
   }
 
   .tally b { color: var(--ink); font-weight: 600; }
@@ -959,7 +956,6 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  align-self: center;
 }
 
 .viewing select {
