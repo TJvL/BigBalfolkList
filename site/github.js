@@ -107,11 +107,9 @@ const utf8ToBase64 = (text) => {
   return btoa(binary);
 };
 
-/** The list as the server has it right now, with the blob it belongs to. */
-export async function latest() {
-  const file = await api(
-    `/repos/${REPO.owner}/${REPO.name}/contents/dances.json?ref=${REPO.branch}`,
-  );
+/** The list as some branch has it, with the blob it belongs to. */
+async function fileFrom(repo, ref) {
+  const file = await api(`/repos/${repo}/contents/dances.json?ref=${ref}`);
   if (!file) throw new Error("dances.json is not where it should be.");
 
   const text = new TextDecoder().decode(
@@ -120,17 +118,65 @@ export async function latest() {
   return { list: JSON.parse(text), sha: file.sha };
 }
 
+export const latest = () => fileFrom(`${REPO.owner}/${REPO.name}`, REPO.branch);
+
 /**
- * Replay a draft onto the live list. This is what makes the promise on the dialog true:
- * what gets proposed is built on what is published now, not on a week-old copy.
+ * Every suggestion still open, newest first. No token needed: the repository is public and
+ * being able to look at what other people are proposing is worth having.
  */
-export async function rebuild(intents) {
-  const { list } = await latest();
-  // Kept before replaying, so the diff shown is against what is published now rather than
+export async function suggestions() {
+  const open = await api(`/repos/${REPO.owner}/${REPO.name}/pulls?state=open&per_page=100`);
+  return (open || [])
+    // Only what the site itself made. Pull requests against the code have nothing to say
+    // about the dance list, and a dancer should not have to tell them apart.
+    .filter((pull) => pull.head?.repo && pull.head.ref.startsWith(SUGGESTION_PREFIX))
+    .map((pull) => ({
+      number: pull.number,
+      title: pull.title,
+      author: pull.user?.login,
+      branch: pull.head.ref,
+      repo: pull.head.repo.full_name,
+      url: pull.html_url,
+      updated: pull.updated_at,
+    }));
+}
+
+export const mine = (suggestion) => signedIn() && suggestion.author === user?.login;
+
+/**
+ * Whether this person may change a suggestion: theirs, or they can push to the repository.
+ * Everyone else can look at it and nothing more.
+ */
+export async function mayEdit(suggestion) {
+  if (!suggestion) return true;
+  if (!signedIn()) return false;
+  if (mine(suggestion)) return true;
+
+  const repo = await api(`/repos/${REPO.owner}/${REPO.name}`);
+  return Boolean(repo?.permissions?.push);
+}
+
+/** The list as one suggestion currently proposes it. */
+export const listFrom = (suggestion) => fileFrom(suggestion.repo, suggestion.branch);
+
+/**
+ * Replay a draft onto whatever it is going to be added to.
+ *
+ * Without a target that is the published list, so a new pull request starts from what is live.
+ * With one it is that pull request's own branch, which matters: rebuilding a follow-up from
+ * main would silently throw away the changes already sitting in it.
+ */
+export async function rebuild(intents, target) {
+  const source = target
+    ? { repo: target.repo, ref: target.branch }
+    : { repo: `${REPO.owner}/${REPO.name}`, ref: REPO.branch };
+
+  const { list, sha } = await fileFrom(source.repo, source.ref);
+  // Kept before replaying, so the diff shown is against what it will be added to rather than
   // against the copy the page happened to load with.
   const before = JSON.parse(JSON.stringify(list));
   const result = replay(list, intents);
-  return { before, list, ...result };
+  return { before, list, sha, source, ...result };
 }
 
 // ---------- the pull request ----------
@@ -152,20 +198,41 @@ async function fork() {
   throw new Error("GitHub is still making your copy of the repository. Try again in a minute.");
 }
 
+const SUGGESTION_PREFIX = "suggestion-";
+
 const branchName = () => {
   const day = new Date().toISOString().slice(0, 10);
-  return `suggestion-${day}-${Math.random().toString(36).slice(2, 6)}`;
+  return `${SUGGESTION_PREFIX}${day}-${Math.random().toString(36).slice(2, 6)}`;
 };
 
 /**
  * Open a pull request with the draft applied to the current list.
  * Returns the pull request, or the conflicts that stopped it.
  */
-export async function propose(intents) {
+export async function propose(intents, target) {
   if (!signedIn()) throw new Error("Sign in first.");
 
-  const { list, applied, stale } = await rebuild(intents);
-  if (!applied.length) return { stale, opened: null };
+  const { list, sha, applied, stale } = await rebuild(intents, target);
+  if (!applied.length) return { stale, opened: null, added: false };
+
+  const changes = applied.map(describe);
+  const summary =
+    changes.length === 1 ? changes[0].text : `${changes.length} changes to the dance list`;
+
+  // Adding to something already open: commit onto its own branch and the pull request
+  // updates itself. No second pull request, and nothing already in it is disturbed.
+  if (target) {
+    await api(`/repos/${target.repo}/contents/dances.json`, {
+      method: "PUT",
+      body: JSON.stringify({
+        message: `Also: ${summary}`,
+        content: utf8ToBase64(canonical(list)),
+        sha,
+        branch: target.branch,
+      }),
+    });
+    return { opened: { html_url: target.url, number: target.number }, stale, added: true };
+  }
 
   const upstream = await api(`/repos/${REPO.owner}/${REPO.name}/git/ref/heads/${REPO.branch}`);
   const mine = await fork();
@@ -178,13 +245,7 @@ export async function propose(intents) {
     body: JSON.stringify({ ref: `refs/heads/${branch}`, sha: upstream.object.sha }),
   });
 
-  const current = await api(
-    `/repos/${mine.full_name}/contents/dances.json?ref=${branch}`,
-  );
-
-  const changes = applied.map(describe);
-  const summary =
-    changes.length === 1 ? changes[0].text : `${changes.length} changes to the dance list`;
+  const current = await api(`/repos/${mine.full_name}/contents/dances.json?ref=${branch}`);
 
   await api(`/repos/${mine.full_name}/contents/dances.json`, {
     method: "PUT",
@@ -207,7 +268,7 @@ export async function propose(intents) {
     }),
   });
 
-  return { opened, stale };
+  return { opened, stale, added: false };
 }
 
 const prose = (changes, stale) =>

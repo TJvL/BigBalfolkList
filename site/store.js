@@ -7,6 +7,7 @@
 import { fold, foldIndexed } from "./fold.js";
 import { apply, describe, replay } from "./intents.js";
 import { clearDraft, loadDraft, saveDraft } from "./draft.js";
+import { listFrom } from "./github.js";
 
 // Resolved against this module rather than the page, so the site keeps working if it is ever
 // served from a subdirectory.
@@ -17,25 +18,43 @@ const clone = (data) => ({
   dances: data.dances.map((d) => ({ slug: d.slug, names: [...d.names], tags: [...d.tags] })),
 });
 
-export async function createStore() {
-  const response = await fetch(DATA, { cache: "no-cache" });
-  if (!response.ok) throw new Error(`could not load the list (${response.status})`);
+/**
+ * The list as published, or as one suggestion proposes it.
+ *
+ * Editing a suggestion means starting from what it actually says, not from the published list
+ * with the suggestion's changes replayed on top: only the first shows the contributor what
+ * their pull request currently contains, which is what a reviewer is commenting on.
+ */
+export async function createStore(suggestion) {
+  let published;
+  let version;
 
-  const published = await response.json();
-  // Whatever the server hands back to identify this version. Stage 4 replaces it with the
-  // commit it belongs to; either way it is what tells a week-old draft that it is stale.
-  const version = response.headers.get("etag") || String(published.dances.length);
+  if (suggestion) {
+    published = (await listFrom(suggestion)).list;
+    version = `pull-${suggestion.number}`;
+  } else {
+    const response = await fetch(DATA, { cache: "no-cache" });
+    if (!response.ok) throw new Error(`could not load the list (${response.status})`);
+    published = await response.json();
+    // Whatever the server hands back to identify this version; it is what tells a week-old
+    // draft that it is stale.
+    version = response.headers.get("etag") || String(published.dances.length);
+  }
+
+  const source = suggestion ? `pull-${suggestion.number}` : "main";
 
   const store = {
     published,
     version,
+    source,
+    suggestion: suggestion || null,
     list: clone(published),
     intents: [],
     stale: [],
     listeners: new Set(),
   };
 
-  const draft = loadDraft();
+  const draft = loadDraft(source);
   if (draft && draft.intents.length) {
     const result = replay(store.list, draft.intents);
     store.intents = result.applied;
@@ -56,7 +75,7 @@ export async function createStore() {
       const result = apply(store.list, intent);
       if (result.ok && !result.already) {
         store.intents.push(intent);
-        saveDraft({ version: store.version, intents: store.intents });
+        saveDraft({ source, version: store.version, intents: store.intents });
         store.changed();
       }
       return result;
@@ -71,7 +90,7 @@ export async function createStore() {
       store.list = clone(store.published);
       store.intents = [];
       store.stale = [];
-      clearDraft();
+      clearDraft(source);
       store.changed();
     },
 

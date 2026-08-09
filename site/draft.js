@@ -10,16 +10,28 @@
 const KEY = "bigbalfolklist.draft";
 const VERSION = 1;
 
-export function loadDraft() {
+// One draft per thing being edited. Changes meant for the published list are not the same
+// changes as ones meant for a particular suggestion, and replaying either onto the other
+// would be quietly wrong.
+const keyFor = (source) => `${KEY}.${source}`;
+
+export function loadDraft(source) {
   try {
-    const raw = localStorage.getItem(KEY);
+    // Drafts from before there was more than one thing to edit belonged to the list itself.
+    const old = localStorage.getItem(KEY);
+    if (old && source === "main" && !localStorage.getItem(keyFor(source))) {
+      localStorage.setItem(keyFor(source), old);
+      localStorage.removeItem(KEY);
+    }
+
+    const raw = localStorage.getItem(keyFor(source));
     if (!raw) return null;
 
     const draft = JSON.parse(raw);
     if (draft.draftVersion !== VERSION || !Array.isArray(draft.intents)) {
       // Written by an older build. Throwing it away is kinder than replaying something
       // whose shape we can no longer reason about.
-      localStorage.removeItem(KEY);
+      localStorage.removeItem(keyFor(source));
       return null;
     }
     return draft;
@@ -28,11 +40,11 @@ export function loadDraft() {
   }
 }
 
-export function saveDraft({ version, intents }) {
+export function saveDraft({ source, version, intents }) {
   try {
-    if (!intents.length) return clearDraft();
+    if (!intents.length) return clearDraft(source);
     localStorage.setItem(
-      KEY,
+      keyFor(source),
       JSON.stringify({ draftVersion: VERSION, version, savedAt: new Date().toISOString(), intents }),
     );
   } catch (error) {
@@ -41,9 +53,9 @@ export function saveDraft({ version, intents }) {
   }
 }
 
-export function clearDraft() {
+export function clearDraft(source) {
   try {
-    localStorage.removeItem(KEY);
+    localStorage.removeItem(keyFor(source));
   } catch (error) {
     /* nothing to do */
   }
