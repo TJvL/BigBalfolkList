@@ -32,12 +32,13 @@
     "suite-montagne",
     "suite-plinn",
     "sweden",
+    "switzerland",
     "unplaced",
     "vendee",
     "waltz"
   ],
   "dances": [
-    {"slug": "aacho", "names": ["Aacho"], "tags": ["unplaced"]},
+    {"slug": "aacho", "names": ["Aacho"], "tags": ["switzerland"]},
     {"slug": "aeroplane-de-notre-dame-des-landes", "names": ["Aéroplane de Notre Dame des Landes"], "tags": ["aeroplane", "bretagne", "france"]},
     {"slug": "aeroplane-de-saint-peran", "names": ["Aéroplane de Saint Peran"], "tags": ["aeroplane", "bretagne", "france"]},
     {"slug": "an-dro", "names": ["An dro", "En dro", "Andro"], "tags": ["bretagne", "france"]},
