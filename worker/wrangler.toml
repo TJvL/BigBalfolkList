@@ -1,0 +1,9 @@
+name = "bigbalfolklist-auth"
+main = "index.js"
+compatibility_date = "2026-01-01"
+
+# The client id is public and lives here. The secret is not, and is set with
+#   wrangler secret put GITHUB_CLIENT_SECRET
+# so it never enters the repository.
+[vars]
+GITHUB_CLIENT_ID = ""

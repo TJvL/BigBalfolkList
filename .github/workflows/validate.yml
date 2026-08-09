@@ -38,6 +38,11 @@ jobs:
         run: |
           git show "origin/${{ github.base_ref }}:dances.json" > /tmp/baseline.json
 
+      - name: The site writes what the validator wants
+        # The site regenerates the whole file when it opens a pull request. If its formatting
+        # drifted from the validator's, every proposal it made would fail this very check.
+        run: node scripts/check_canonical.mjs
+
       - name: Check the list
         run: |
           if [ -f /tmp/baseline.json ]; then
