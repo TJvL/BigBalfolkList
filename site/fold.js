@@ -1,8 +1,7 @@
 // The fold rule, for comparing names.
 //
-// This is the third implementation of the same three rules: scripts/validate.py has one and
-// Ready4Balfolk's StringNormalizer has another. All three must agree exactly, or a name
-// matches in one place and not in another.
+// scripts/validate.py implements the same three rules, and so does anything consuming this
+// list. They must agree exactly, or a name matches in one place and not in another.
 //
 // - An apostrophe joins a word and is removed. "Kost ar c'hoad" folds to "kost ar choad",
 //   which is what people type. Turning it into a space gives "kost ar c hoad", matching

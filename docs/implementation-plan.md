@@ -30,9 +30,9 @@ to work against.
 4. **Replace `scripts/convert.py` with `scripts/validate.py`.** It stops generating and
    starts checking: every name unique across all dances, every tag on a dance present in the
    `tags` array, no slug removed or altered against `main`, and the file byte-identical to its
-   canonical formatting. Keep `fold()` exactly as it is — it must stay identical to
-   Ready4Balfolk's `StringNormalizer`, apostrophes joining and everything else separating.
-   Add `--fix` so it can write the canonical form rather than only complaining about it.
+   canonical formatting. Keep `fold()` exactly as it is — every consumer of the list folds
+   names the same way, apostrophes joining and everything else separating. Add `--fix` so it
+   can write the canonical form rather than only complaining about it.
 5. **Delete `dances.md` and `slugs.lock.json`.** The lock only existed to remember slugs that
    the markdown did not store.
 6. **Replace the `Generate` workflow with `Validate`**, running `validate.py` on pull requests
@@ -42,7 +42,7 @@ to work against.
    changes are proposed through the site rather than by hand.
 8. **Tests for the validator**: name collision, unknown tag, removed slug, mis-sorted file,
    and a fold-rule table (`Kost ar c'hoad` → `kost ar choad`, `Pilé-menu` → `pile menu`)
-   that would catch a divergence from Ready4Balfolk.
+   that would catch the rule drifting.
 
 ## Stage 3 — the app, offline
 

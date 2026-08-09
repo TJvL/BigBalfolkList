@@ -35,8 +35,8 @@ def fold(value: str) -> str:
     """Normalise a name for comparison: no accents, no case, no punctuation.
 
     This must agree exactly with what consumers do, or a name matches here and not there.
-    Ready4Balfolk's StringNormalizer implements the same three rules, and the site's
-    JavaScript implements them a third time; all three have to stay in step.
+    site/fold.js implements the same three rules for the browser, and every consumer of the
+    list implements them again; they all have to stay in step.
 
     Apostrophes and hyphens have to be treated differently, and getting either wrong costs
     real matches:
