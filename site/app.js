@@ -12,6 +12,7 @@ import { bulkBar, familyDialog, renderOpenCard } from "./editor.js";
 import { renderTags } from "./tags.js";
 import * as github from "./github.js";
 import * as config from "./config.js";
+import { canonical } from "./canonical.js";
 
 const ui = {
   editing: false,
@@ -514,6 +515,19 @@ function wire() {
   $("mode-browse").addEventListener("click", () => setMode(false));
   $("mode-edit").addEventListener("click", () => setMode(true));
 
+  $("export").addEventListener("click", () => {
+    // Exactly what the site would commit, so it can be dropped straight into the repository
+    // or fed to anything else that wants the list.
+    const text = canonical(store.list);
+    const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "dances.json";
+    link.click();
+    URL.revokeObjectURL(url);
+  });
+
   $("source").addEventListener("change", async (event) => {
     const chosen = openSuggestions.find((s) => String(s.number) === event.target.value);
     try {
@@ -617,10 +631,11 @@ function renderSource() {
   select.append(published);
 
   for (const suggestion of openSuggestions) {
-    const label = `#${suggestion.number} · ${suggestion.title}`;
+    // Whose it is comes before what it says: two people's suggestions otherwise read alike.
+    const label = `#${suggestion.number} · ${suggestion.author} · ${suggestion.title}`;
     select.append(
       new Option(
-        label.length > 34 ? label.slice(0, 33) + "…" : label,
+        label.length > 40 ? label.slice(0, 39) + "…" : label,
         String(suggestion.number),
         false,
         store.suggestion?.number === suggestion.number,

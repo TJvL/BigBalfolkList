@@ -162,27 +162,33 @@ export function replay(list, intents) {
   return { applied, stale };
 }
 
-/** What an intent reads like in the change list and in a pull request body. */
+/**
+ * What an intent reads like, in the change list and in a pull request body.
+ *
+ * Written as sentences about the dance, because these are read by people: "grabbelton tagged
+ * netherlands", not "netherlands → grabbelton". Arrows made sense beside a card and nowhere
+ * else.
+ */
 export function describe(intent) {
   switch (intent.op) {
     case "dance.add":
-      return { verb: "added", text: `${intent.names[0]} as a new dance` };
+      return { verb: "added", text: `${intent.names[0]} added as a new dance` };
     case "dance.remove":
-      return { verb: "removed", text: `the dance ${intent.slug}` };
+      return { verb: "removed", text: `the dance ${intent.slug} removed` };
     case "name.add":
-      return { verb: "name +", text: `${intent.value} now names ${intent.slug}` };
+      return { verb: "name +", text: `${intent.slug} also goes by “${intent.value}”` };
     case "name.remove":
-      return { verb: "name −", text: `${intent.value} no longer names ${intent.slug}` };
+      return { verb: "name −", text: `${intent.slug} no longer goes by “${intent.value}”` };
     case "tag.add":
-      return { verb: "tag", text: `${intent.tag} → ${intent.slug}` };
+      return { verb: "tag", text: `${intent.slug} tagged ${intent.tag}` };
     case "tag.remove":
-      return { verb: "untag", text: `${intent.tag} off ${intent.slug}` };
+      return { verb: "untag", text: `${intent.tag} taken off ${intent.slug}` };
     case "tag.rename":
-      return { verb: "renamed", text: `${intent.from} → ${intent.to}` };
+      return { verb: "renamed", text: `the tag ${intent.from} renamed to ${intent.to}` };
     case "tag.merge":
-      return { verb: "merged", text: `${intent.from} folded into ${intent.into}` };
+      return { verb: "merged", text: `the tag ${intent.from} folded into ${intent.into}` };
     case "tag.delete":
-      return { verb: "deleted", text: `the tag ${intent.tag}` };
+      return { verb: "deleted", text: `the tag ${intent.tag} deleted` };
     default:
       return { verb: "changed", text: intent.op };
   }
