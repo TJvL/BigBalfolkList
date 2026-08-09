@@ -53,12 +53,16 @@ export function apply(list, intent) {
       if (find(list, intent.slug)) return already("that dance already exists");
       const clash = intent.names.find((n) => ownerOf(list, n, intent.slug));
       if (clash) return no(`the name "${clash}" now belongs to another dance`);
-      list.dances.push({
+      const added = {
         slug: intent.slug,
         names: [...intent.names],
         tags: sorted(intent.tags || []),
         isNew: true,
-      });
+      };
+      // Into its place in the alphabet rather than onto the end: the file is written sorted by
+      // slug, so appending would show the dance somewhere it will never actually be.
+      const at = list.dances.findIndex((d) => d.slug > added.slug);
+      at === -1 ? list.dances.push(added) : list.dances.splice(at, 0, added);
       for (const tag of intent.tags || []) declare(list, tag);
       return ok();
     }
