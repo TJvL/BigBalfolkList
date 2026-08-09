@@ -61,6 +61,24 @@ export function clearDraft(source) {
   }
 }
 
+/**
+ * What is waiting under some other version, so the switcher can say so. Somebody who left
+ * changes on the published list and went to look at a suggestion should not have to switch
+ * back to find out whether they still have them.
+ */
+export function draftSummary(source) {
+  try {
+    const raw = localStorage.getItem(keyFor(source));
+    if (!raw) return null;
+
+    const draft = JSON.parse(raw);
+    if (!Array.isArray(draft.intents) || !draft.intents.length) return null;
+    return { count: draft.intents.length, savedAt: draft.savedAt };
+  } catch (error) {
+    return null;
+  }
+}
+
 /** "3 days ago", for telling someone how old the draft they just resumed is. */
 export function since(iso) {
   const then = Date.parse(iso);
