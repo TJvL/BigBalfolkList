@@ -1,0 +1,47 @@
+name: Validate
+
+# Nothing is generated any more, so nothing is committed by a bot. dances.json is the source
+# and this only ever says yes or no, which is why it is safe to make it a required check.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The whole history, so a pull request can be compared against the branch it
+          # targets. That comparison is what catches a slug quietly disappearing.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Tests
+        run: python3 scripts/test_validate.py
+
+      - name: Take the current list as a baseline
+        if: github.event_name == 'pull_request'
+        run: |
+          git show "origin/${{ github.base_ref }}:dances.json" > /tmp/baseline.json
+
+      - name: Check the list
+        run: |
+          if [ -f /tmp/baseline.json ]; then
+            python3 scripts/validate.py --baseline /tmp/baseline.json
+          else
+            python3 scripts/validate.py
+          fi
