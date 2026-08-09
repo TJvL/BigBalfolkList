@@ -110,7 +110,13 @@ const utf8ToBase64 = (text) => {
 /** The list as some branch has it, with the blob it belongs to. */
 async function fileFrom(repo, ref) {
   const file = await api(`/repos/${repo}/contents/dances.json?ref=${ref}`);
-  if (!file) throw new Error("dances.json is not where it should be.");
+  if (!file) {
+    // A branch that has gone means the suggestion was merged or closed while this page sat
+    // open. That is an ordinary thing to happen, not a broken repository.
+    const gone = new Error("That suggestion is no longer there. It was probably merged or closed.");
+    gone.gone = true;
+    throw gone;
+  }
 
   const text = new TextDecoder().decode(
     Uint8Array.from(atob(file.content.replace(/\n/g, "")), (c) => c.charCodeAt(0)),
@@ -209,8 +215,24 @@ const branchName = () => {
  * Open a pull request with the draft applied to the current list.
  * Returns the pull request, or the conflicts that stopped it.
  */
+/** Whether a suggestion is still open and can still be added to. */
+export async function stillOpen(number) {
+  const pull = await api(`/repos/${REPO.owner}/${REPO.name}/pulls/${number}`);
+  return pull?.state === "open";
+}
+
 export async function propose(intents, target) {
   if (!signedIn()) throw new Error("Sign in first.");
+
+  // A merged suggestion often keeps its branch, so committing to it would appear to work
+  // while proposing nothing at all. Ask before writing rather than after.
+  if (target && !(await stillOpen(target.number))) {
+    const gone = new Error(
+      `Suggestion #${target.number} has already been merged or closed, so nothing more can be added to it.`,
+    );
+    gone.gone = true;
+    throw gone;
+  }
 
   const { list, sha, applied, stale } = await rebuild(intents, target);
   if (!applied.length) return { stale, opened: null, added: false };

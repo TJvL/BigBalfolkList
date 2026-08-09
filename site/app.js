@@ -191,6 +191,16 @@ function renderTray() {
   }
 }
 
+/** One line at the top of the page, for something the reader has to know right now. */
+function say(message) {
+  const banner = $("resumed");
+  banner.replaceChildren(
+    el("p", "stale-head", message),
+    button("btn quiet", "Got it", () => (banner.hidden = true)),
+  );
+  banner.hidden = false;
+}
+
 /** A resumed draft says what it could not put back, rather than dropping it in silence. */
 function renderResumed() {
   const banner = $("resumed");
@@ -356,6 +366,14 @@ async function refreshProposal() {
     note.classList.toggle("bad", stale.length > 0);
     $("pr-go").textContent = target ? `Add to #${target.number}` : "Open pull request";
   } catch (error) {
+    if (error.gone) {
+      // Saying "fine to send" here would be a lie: there is nothing left to send it to.
+      target = null;
+      note.textContent = `${error.message} Your changes are safe, and will open a new suggestion instead.`;
+      note.classList.add("bad");
+      $("pr-go").textContent = "Open pull request";
+      return;
+    }
     // Rate limited, or offline. The proposal still works; it is the reassurance that does not.
     note.textContent = "Could not reach GitHub to check for newer changes. Yours are still fine to send.";
   }
@@ -392,7 +410,13 @@ async function openPullRequest() {
     $("pr").close();
     showOpened(opened.html_url, stale.length, added, opened.number);
   } catch (error) {
-    note.textContent = error.message;
+    if (error.gone) {
+      // Falls back to a new suggestion rather than losing the work; one more press sends it.
+      target = null;
+      note.textContent = `${error.message} Press again to open a new one with these changes.`;
+    } else {
+      note.textContent = error.message;
+    }
     note.classList.add("bad");
   } finally {
     button_.disabled = false;
@@ -535,8 +559,12 @@ function wire() {
       await load(chosen || null);
       render();
     } catch (error) {
+      // Merged or closed while this page sat open. Say so, drop it from the menu, and stay
+      // where we were rather than leaving a dead selection behind.
+      openSuggestions = await github.suggestions().catch(() => openSuggestions);
+      renderSource();
       event.target.value = store.suggestion ? String(store.suggestion.number) : "main";
-      console.error(error);
+      say(error.gone ? error.message : "That could not be loaded. Try again in a moment.");
     }
   });
   $("view-dances").addEventListener("click", () => setView("dances"));
