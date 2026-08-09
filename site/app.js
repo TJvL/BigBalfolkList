@@ -431,6 +431,7 @@ async function openPullRequest() {
     note.classList.remove("bad");
     button_.disabled = true;
     button_.textContent = "Signing in…";
+    rememberViewing();
     github.signIn();
     return;
   }
@@ -449,6 +450,11 @@ async function openPullRequest() {
     store.discard();
     $("pr").close();
     showOpened(opened.html_url, stale.length, added, opened.number);
+
+    // The switcher is filled once, at load. A suggestion opened since then is missing from it,
+    // which reads as the switcher having lost it rather than never having seen it.
+    openSuggestions = await github.suggestions().catch(() => openSuggestions);
+    renderSource();
   } catch (error) {
     if (error.gone) {
       // Falls back to a new suggestion rather than losing the work; one more press sends it.
@@ -751,19 +757,50 @@ function renderBranchBanner() {
   link.rel = "noreferrer";
   inner.append(link);
 
-  inner.append(
-    el(
-      "span",
-      "locked",
-      editable
-        ? "you can change this one"
-        : github.signedIn()
-          ? "read only — it is not yours"
-          : "read only — sign in if it is yours",
-    ),
-  );
+  if (editable) {
+    inner.append(el("span", "locked", "you can change this one"));
+  } else if (github.signedIn() || !config.canSignIn()) {
+    inner.append(el("span", "locked", "read only — it is not yours"));
+  } else {
+    // Saying "sign in" without offering anywhere to do it is a dead end: the only other way in
+    // is the proposal dialog, and a page nobody may change never has changes to propose.
+    inner.append(el("span", "locked", "read only — sign in if it is yours"));
+    inner.append(
+      button("btn", "Sign in", () => {
+        rememberViewing();
+        github.signIn();
+      }, { title: "Sign in with GitHub, and come back to this suggestion" }),
+    );
+  }
 
   banner.hidden = false;
+}
+
+const VIEWING_KEY = "bigbalfolklist.viewing";
+
+/**
+ * Which version is on screen, kept across the sign-in redirect.
+ *
+ * GitHub sends the contributor back to the bare page address, so without this, signing in to
+ * edit a suggestion lands on the published list — having done exactly what was asked and
+ * appearing to have ignored it.
+ */
+function rememberViewing() {
+  try {
+    sessionStorage.setItem(VIEWING_KEY, store.suggestion ? String(store.suggestion.number) : "main");
+  } catch (error) {
+    /* the sign-in still works; it just comes back on the published list */
+  }
+}
+
+function takeRememberedViewing() {
+  try {
+    const value = sessionStorage.getItem(VIEWING_KEY);
+    sessionStorage.removeItem(VIEWING_KEY);
+    return value;
+  } catch (error) {
+    return null;
+  }
 }
 
 async function start() {
@@ -791,9 +828,18 @@ async function start() {
   try {
     if (await github.completeSignIn()) {
       openSuggestions = await github.suggestions().catch(() => []);
-      editable = await github.mayEdit(store.suggestion);
-      renderSource();
-      renderBranchBanner();
+
+      // Back to whatever was being looked at, which the redirect dropped.
+      const was = takeRememberedViewing();
+      const again = openSuggestions.find((s) => String(s.number) === was);
+      if (again) {
+        await load(again);
+      } else {
+        editable = await github.mayEdit(store.suggestion);
+        renderSource();
+        renderBranchBanner();
+      }
+
       setMode(true);
       if (store.intents.length) openProposal({ send: true });
     }
