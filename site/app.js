@@ -25,6 +25,8 @@ const ui = {
 };
 
 let store;
+let openSuggestions = [];
+let editable = true;
 
 const actions = {
   toggleTag(tag) {
@@ -257,23 +259,100 @@ function buildDiff(against) {
  * Opening the dialog rebuilds the draft on the list as the server has it this second, so the
  * line promising exactly that is true rather than decorative.
  */
+/** Which open pull request these changes join, or none for a fresh one. */
+let target = null;
+
 async function openProposal() {
-  const note = $("rebuilt");
   buildDiff();
   $("pr-go").disabled = false;
   $("pr").showModal();
 
-  note.textContent = "Checking the list for changes by other people…";
+  await renderWhere();
+  await refreshProposal();
+}
+
+/**
+ * Somebody with a suggestion still open usually means the follow-up to belong to it. Offering
+ * both beats guessing: a second pull request is right when the subjects are unrelated, and
+ * wrong when it is more of the same.
+ */
+async function renderWhere() {
+  const where = $("where");
+  where.hidden = true;
+  where.replaceChildren();
+
+  // Editing a suggestion: there is nowhere else these could go.
+  if (store.suggestion) {
+    target = store.suggestion;
+    where.append(
+      el("span", "eyebrow", "Where these go"),
+      el("p", "hint", `Onto suggestion #${store.suggestion.number}, which is what you have been editing.`),
+    );
+    where.hidden = false;
+    return;
+  }
+
+  if (!github.signedIn()) return;
+
+  let mine = [];
+  try {
+    mine = (await github.suggestions()).filter(github.mine);
+  } catch (error) {
+    return;
+  }
+  if (!mine.length) return;
+
+  target = mine[0];
+  where.append(el("span", "eyebrow", "Where these go"));
+
+  const group = el("div", "choice");
+  const option = (value, checked, title, why) => {
+    const label = el("label");
+    const radio = el("input");
+    radio.type = "radio";
+    radio.name = "where";
+    radio.checked = checked;
+    radio.addEventListener("change", () => {
+      target = value;
+      refreshProposal();
+    });
+    label.append(radio, el("strong", null, title), el("span", "why", why));
+    group.append(label);
+  };
+
+  for (const suggestion of mine) {
+    option(
+      suggestion,
+      suggestion === target,
+      `Add to your open suggestion #${suggestion.number}`,
+      suggestion.title,
+    );
+  }
+  option(null, false, "Open a separate pull request", "For changes that have nothing to do with the above.");
+
+  where.append(group);
+  where.hidden = false;
+}
+
+/** Rebuild the diff against whatever the changes are going to be added to. */
+async function refreshProposal() {
+  const note = $("rebuilt");
+  note.textContent = "Checking for changes by other people…";
   note.classList.remove("bad");
 
   try {
-    const rebuilt = await github.rebuild(store.intents);
+    const rebuilt = await github.rebuild(store.intents, target);
     buildDiff(compare(rebuilt.before, rebuilt.list));
+
     const { stale } = rebuilt;
+    const base = target
+      ? `your open suggestion #${target.number}`
+      : "the list as it stands right now";
     note.textContent = stale.length
-      ? `Rebuilt on the list as it stands right now. ${stale.length} of your changes no longer fit and will be left out.`
-      : "Rebuilt a moment ago on the list as it stands right now, so anything other people changed while you were working is already in.";
+      ? `Rebuilt on ${base}. ${stale.length} of your changes no longer fit and will be left out.`
+      : `Rebuilt a moment ago on ${base}, so anything that changed while you were working is already in.`;
     note.classList.toggle("bad", stale.length > 0);
+    $("pr-go").textContent = target ? `Add to #${target.number}` : "Open pull request";
   } catch (error) {
     // Rate limited, or offline. The proposal still works; it is the reassurance that does not.
     note.textContent = "Could not reach GitHub to check for newer changes. Yours are still fine to send.";
@@ -298,8 +377,8 @@ async function openPullRequest() {
       return;
     }
 
-    button_.textContent = "Opening…";
-    const { opened, stale } = await github.propose(store.intents);
+    button_.textContent = target ? "Adding…" : "Opening…";
+    const { opened, stale, added } = await github.propose(store.intents, target);
 
     if (!opened) {
       note.textContent = "None of your changes still apply to the list. Nothing was sent.";
@@ -309,27 +388,27 @@ async function openPullRequest() {
 
     store.discard();
     $("pr").close();
-    showOpened(opened.html_url, stale.length);
+    showOpened(opened.html_url, stale.length, added, opened.number);
   } catch (error) {
     note.textContent = error.message;
     note.classList.add("bad");
   } finally {
     button_.disabled = false;
-    button_.textContent = "Open pull request";
+    button_.textContent = target ? `Add to #${target.number}` : "Open pull request";
   }
 }
 
-function showOpened(url, leftOut) {
+function showOpened(url, leftOut, added, number) {
   const banner = $("resumed");
   banner.replaceChildren();
   banner.append(el("p", null, "Sent. Thank you."));
 
-  const link = el("a", null, url.split("/").slice(-2).join(" #").replace("pull #", "pull request #"));
+  const link = el("a", null, `suggestion #${number}`);
   link.href = url;
   link.target = "_blank";
   link.rel = "noreferrer";
 
-  const line = el("p", null, "Someone will look at it: ");
+  const line = el("p", null, added ? "Added to " : "Someone will look at it: ");
   line.append(link);
   banner.append(line);
 
@@ -369,7 +448,10 @@ function compare(before, after) {
 // ---------- wiring ----------
 
 function setMode(editing) {
-  ui.editing = editing;
+  // Somebody else's suggestion is theirs to change, so it can be read and nothing else.
+  ui.editing = editing && editable;
+  $("mode-edit").disabled = !editable;
+  $("mode-edit").title = editable ? "" : "Only the person who made this suggestion can change it";
   if (!editing) {
     ui.expanded = null;
     ui.picked.clear();
@@ -431,6 +513,17 @@ function theme() {
 function wire() {
   $("mode-browse").addEventListener("click", () => setMode(false));
   $("mode-edit").addEventListener("click", () => setMode(true));
+
+  $("source").addEventListener("change", async (event) => {
+    const chosen = openSuggestions.find((s) => String(s.number) === event.target.value);
+    try {
+      await load(chosen || null);
+      render();
+    } catch (error) {
+      event.target.value = store.suggestion ? String(store.suggestion.number) : "main";
+      console.error(error);
+    }
+  });
   $("view-dances").addEventListener("click", () => setView("dances"));
   $("view-tags").addEventListener("click", () => setView("tags"));
   $("combine-any").addEventListener("click", () => setCombine("any"));
@@ -494,8 +587,87 @@ function wire() {
   });
 }
 
+/**
+ * Load a version of the list: the published one, or what a suggestion proposes.
+ * Anyone may look at any of them; whether they may change it is decided separately.
+ */
+async function load(suggestion) {
+  store = await createStore(suggestion);
+  editable = await github.mayEdit(suggestion);
+
+  if (!editable) {
+    ui.editing = false;
+    ui.expanded = null;
+    ui.picked.clear();
+  }
+
+  store.subscribe(render);
+  target = suggestion || null;
+  renderSource();
+  renderBranchBanner();
+  setMode(ui.editing && editable);
+  renderResumed();
+}
+
+function renderSource() {
+  const select = $("source");
+  select.replaceChildren();
+
+  const published = new Option("the published list", "main", true, !store.suggestion);
+  select.append(published);
+
+  for (const suggestion of openSuggestions) {
+    const label = `#${suggestion.number} · ${suggestion.title}`;
+    select.append(
+      new Option(
+        label.length > 34 ? label.slice(0, 33) + "…" : label,
+        String(suggestion.number),
+        false,
+        store.suggestion?.number === suggestion.number,
+      ),
+    );
+  }
+
+  $("viewing").hidden = openSuggestions.length === 0;
+}
+
+function renderBranchBanner() {
+  const banner = $("on-branch");
+  const inner = banner.querySelector(".inner");
+  inner.replaceChildren();
+
+  if (!store.suggestion) return (banner.hidden = true);
+
+  const suggestion = store.suggestion;
+  inner.append(
+    el("span", null, `You are looking at suggestion #${suggestion.number}, by ${suggestion.author}, as it currently stands.`),
+  );
+
+  const link = el("a", null, "see it on GitHub");
+  link.href = suggestion.url;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+  inner.append(link);
+
+  inner.append(
+    el(
+      "span",
+      "locked",
+      editable
+        ? "you can change this one"
+        : github.signedIn()
+          ? "read only — it is not yours"
+          : "read only — sign in if it is yours",
+    ),
+  );
+
+  banner.hidden = false;
+}
+
 async function start() {
   try {
+    // Before anything is drawn, so the switcher is complete the first time it appears.
+    openSuggestions = await github.suggestions().catch(() => []);
     store = await createStore();
   } catch (error) {
     $("main").replaceChildren(
@@ -505,9 +677,10 @@ async function start() {
     return;
   }
 
-  store.subscribe(render);
   wire();
   theme();
+  store.subscribe(render);
+  renderSource();
   renderResumed();
   render();
 
@@ -515,7 +688,10 @@ async function start() {
   // the contributor was in the middle of making.
   try {
     if (await github.completeSignIn()) {
-      ui.editing = true;
+      openSuggestions = await github.suggestions().catch(() => []);
+      editable = await github.mayEdit(store.suggestion);
+      renderSource();
+      renderBranchBanner();
       setMode(true);
       if (store.intents.length) openProposal();
     }

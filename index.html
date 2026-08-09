@@ -38,6 +38,11 @@
 
     <div class="tally" id="tally"></div>
 
+    <label class="viewing" id="viewing" hidden>
+      <span class="eyebrow">Viewing</span>
+      <select id="source" aria-label="Which version of the list to show"></select>
+    </label>
+
     <div class="tabs theme" id="theme" role="group" aria-label="Theme">
       <button type="button" data-theme-choice="system">Auto</button>
       <button type="button" data-theme-choice="light">Light</button>
@@ -54,6 +59,8 @@
     <p>Every name a dance goes by, side by side as equals. Nobody's spelling is the wrong one.</p>
   </div>
 </header>
+
+<div class="on-branch" id="on-branch" hidden><div class="inner"></div></div>
 
 <div class="resumed" id="resumed" hidden></div>
 
@@ -109,6 +116,7 @@
     <p>This opens a pull request against <code>dances.json</code>. Nothing goes live until
       someone merges it, and the list keeps its full history. You are not editing the site, you
       are suggesting an edit to the list everyone shares.</p>
+    <div class="field" id="where" hidden></div>
     <p class="rebuilt" id="rebuilt">Rebuilt a moment ago on the list as it stands right now, so
       anything other people changed while you were working is already in.</p>
     <div class="diff" id="diff"></div>
