@@ -1,9 +1,15 @@
-// The tag screen: rename, merge, delete.
+// The tag screen: make, rename, merge, delete.
 //
 // Renaming is safe because a tag is a thing in its own right rather than a word copied onto
 // each dance, so every dance carrying it follows along. Renaming one to a name that already
 // exists is a merge, which is how two tags that turned out to mean the same thing get
 // cleaned up.
+//
+// A tag can also be made here, carrying nothing. On a dance card a new tag is a side effect of
+// tagging something, which is right there: the deliberate click guards against sprawl. But
+// somebody sorting the vocabulary out is thinking about the tags themselves, and asking them
+// to go and find a dance to hang a name on first would only teach them to hang it on the
+// wrong one.
 
 import { button, el } from "./dom.js";
 import { slugify } from "./fold.js";
@@ -22,6 +28,7 @@ export function renderTags(store, ui, actions) {
 
   const shown = store.list.tags.filter((t) => t.includes(ui.tagFilter));
   bar.append(el("span", "hint", `${shown.length} of ${store.list.tags.length} tags`));
+  bar.append(adder(store, ui, actions));
   wrap.append(bar);
 
   wrap.append(
@@ -52,9 +59,60 @@ export function renderTags(store, ui, actions) {
   return wrap;
 }
 
+/**
+ * Make a tag that carries nothing yet.
+ *
+ * Escape abandons it and so does clicking away, because half a word typed and then thought
+ * better of is not a tag anybody meant to make. Enter is the only thing that commits.
+ */
+function adder(store, ui, actions) {
+  const slot = el("span", "adder");
+
+  slot.append(
+    button("btn", "New tag", () => {
+      slot.replaceChildren();
+
+      const input = el("input", "new-tag");
+      input.type = "text";
+      input.placeholder = "new tag, then Enter";
+      input.setAttribute("aria-label", "Name of the new tag");
+      slot.append(input);
+      input.focus();
+
+      const commit = () => {
+        const tag = slugify(input.value);
+        if (!tag) return actions.rerender();
+
+        // Already there: say so by showing it, rather than by doing nothing visible.
+        if (store.list.tags.includes(tag)) return actions.filterTags(tag);
+
+        // A filter it does not match would hide the row it is about to make.
+        if (!tag.includes(ui.tagFilter)) actions.filterTags("");
+        store.run({ op: "tag.create", tag });
+        requestAnimationFrame(() => {
+          const made = document.querySelector(`tr[data-tag="${CSS.escape(tag)}"]`);
+          made?.scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+      };
+
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          commit();
+        }
+        if (event.key === "Escape") actions.rerender();
+      });
+      input.addEventListener("blur", () => actions.rerender());
+    }),
+  );
+
+  return slot;
+}
+
 function row(store, tag, actions) {
   const count = store.tagCount(tag);
   const tr = el("tr", count ? null : "unused");
+  tr.dataset.tag = tag;
   const name = el("td", null, tag);
   const acts = el("td", "acts");
 
