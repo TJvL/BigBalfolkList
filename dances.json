@@ -17,6 +17,7 @@
     "france",
     "gascogne",
     "gavotte",
+    "hybrid",
     "ireland",
     "isreal",
     "italy",
@@ -113,6 +114,7 @@
     {"slug": "marchoise", "names": ["Marchoise"], "tags": ["france", "poitou", "quadrette", "vendee"]},
     {"slug": "mardi-gras", "names": ["Mardi Gras"], "tags": ["france", "poitou"]},
     {"slug": "mazurka", "names": ["Mazurka", "Mazurca", "Masurka"], "tags": ["couple", "pan-scene"]},
+    {"slug": "mazurka-waltz", "names": ["Mazurka-Waltz", "Mazurka-Valse", "Mazurka-Wals"], "tags": ["couple", "hybrid", "pan-scene"]},
     {"slug": "mutxiko", "names": ["Mutxiko"], "tags": ["basque", "saut"]},
     {"slug": "pach-pi", "names": ["Pach pi", "Passepied"], "tags": ["bretagne", "france"]},
     {"slug": "pas-dete", "names": ["Pas d'été"], "tags": ["france", "poitou", "solo", "vendee"]},
@@ -158,6 +160,7 @@
     {"slug": "waltz-in-3", "names": ["Waltz in 3", "Valse à 3 temps", "Waltz 3", "Valse 3", "Wals in 3", "Wals 3", "Wals", "Vals", "Valse", "Waltz"], "tags": ["couple", "pan-scene", "waltz"]},
     {"slug": "waltz-in-5", "names": ["Waltz in 5", "Valse à 5 temps", "Waltz 5", "Valse 5", "Wals in 5", "Wals 5"], "tags": ["couple", "pan-scene", "waltz"]},
     {"slug": "waltz-in-8", "names": ["Waltz in 8", "Valse à 8 temps", "Waltz 8", "Valse 8", "Wals in 8", "Wals 8"], "tags": ["couple", "pan-scene", "waltz"]},
+    {"slug": "waltz-scottish", "names": ["Waltz-Scottish", "Valse-Scottish", "Wals-Scottish"], "tags": ["couple", "hybrid", "pan-scene"]},
     {"slug": "zazpi-jautzi", "names": ["Zazpi jautzi", "Sept sauts"], "tags": ["basque", "saut"]},
     {"slug": "zelda", "names": ["Zelda"], "tags": ["mixer", "pan-scene"]}
   ]
