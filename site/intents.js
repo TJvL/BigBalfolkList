@@ -15,6 +15,7 @@ export const OPS = [
   "dance.remove",
   "name.add",
   "name.remove",
+  "tag.create",
   "tag.add",
   "tag.remove",
   "tag.rename",
@@ -88,6 +89,12 @@ export function apply(list, intent) {
       if (!dance.names.includes(intent.value)) return already("that name is already gone");
       if (dance.names.length === 1) return no("it is the only name the dance has");
       dance.names = dance.names.filter((n) => n !== intent.value);
+      return ok();
+    }
+
+    case "tag.create": {
+      if (list.tags.includes(intent.tag)) return already("that tag already exists");
+      declare(list, intent.tag);
       return ok();
     }
 
@@ -183,6 +190,8 @@ export function describe(intent) {
       return { verb: "name +", text: `${intent.slug} also goes by “${intent.value}”` };
     case "name.remove":
       return { verb: "name −", text: `${intent.slug} no longer goes by “${intent.value}”` };
+    case "tag.create":
+      return { verb: "new tag", text: `the tag ${intent.tag} made, carrying nothing yet` };
     case "tag.add":
       return { verb: "tag", text: `${intent.slug} tagged ${intent.tag}` };
     case "tag.remove":
