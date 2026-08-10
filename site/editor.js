@@ -7,7 +7,7 @@
 // near-duplicates within a month.
 
 import { button, el } from "./dom.js";
-import { slugify } from "./fold.js";
+import { fold, slugify } from "./fold.js";
 
 const IDLE_NAME_HINT =
   "Names sit side by side as equals. Whichever you add is no more correct than the others.";
@@ -42,19 +42,35 @@ export function nameField(store, dance, rerender) {
 
   field.append(tokens, note);
 
+  // Names are compared folded, exactly as the list itself compares them, or the field says a
+  // spelling is free and then the change is quietly refused. "Forro" is "Forró" here.
   const look = (raw) => {
     const value = raw.trim();
     if (!value) return { quiet: true };
 
+    const key = fold(value);
     const owner = store.ownerOf(value, dance.slug);
     if (owner) {
+      const match = owner.names.find((n) => fold(n) === key);
       return {
         ok: false,
-        message: `“${value}” already names ${owner.names[0]}. A name can only belong to one dance.`,
+        message:
+          match === value
+            ? `“${value}” already names ${owner.names[0]}. A name can only belong to one dance.`
+            : `“${value}” is the same name as “${match}”, which belongs to ${owner.names[0]}. ` +
+              `Accents, punctuation and case are ignored when names are compared.`,
       };
     }
-    if (dance.names.some((n) => n === value)) {
-      return { ok: false, message: "This dance already goes by that name." };
+    const mine = dance.names.find((n) => fold(n) === key);
+    if (mine) {
+      return {
+        ok: false,
+        message:
+          mine === value
+            ? "This dance already goes by that name."
+            : `It already goes by “${mine}”, which is the same name once accents, punctuation ` +
+              `and case are ignored.`,
+      };
     }
     return { ok: true, message: "Free to use." };
   };
@@ -72,7 +88,15 @@ export function nameField(store, dance, rerender) {
     const value = input.value.trim();
     if (!look(value).ok) return;
 
-    store.run({ op: "name.add", slug: dance.slug, value });
+    // A refusal here means the field and the list disagree about this name. Say so rather
+    // than re-rendering an unchanged card, which reads as the key having done nothing.
+    const result = store.run({ op: "name.add", slug: dance.slug, value });
+    if (!result.ok || result.already) {
+      note.className = "note bad";
+      note.textContent = capitalise(result.reason);
+      return;
+    }
+
     rerender(() => document.querySelector(".card.open .token-input")?.focus());
   });
 
