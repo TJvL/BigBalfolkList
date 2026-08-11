@@ -1076,6 +1076,14 @@
 
   .unused td:first-child { color: var(--muted); }
 
+  /* The word table's own two columns. A number is what the word turns into, so it is the
+     one value in the row worth colouring; "ignored" is the absence of a value. */
+  td.means { color: var(--muted); }
+  td.means.number { color: var(--verdigris); font-variant-numeric: tabular-nums; }
+
+  .tagbar input.digits { width: 5rem; }
+  td .rename.digits { width: 5rem; }
+
   /* ---------- change tray ---------- */
 
   .tray {

@@ -10,6 +10,7 @@ import { createStore } from "./store.js";
 import { matches, renderCard, renderCloud } from "./browse.js";
 import { bulkBar, familyDialog, newDanceDialog, renderOpenCard } from "./editor.js";
 import { renderTags } from "./tags.js";
+import { renderWords } from "./words.js";
 import * as github from "./github.js";
 import * as config from "./config.js";
 import { canonical } from "./canonical.js";
@@ -23,6 +24,7 @@ const ui = {
   combine: "any",
   query: "",
   tagFilter: "",
+  wordFilter: "",
 };
 
 let store;
@@ -44,6 +46,15 @@ const actions = {
   },
   filterTags(value) {
     ui.tagFilter = value.trim().toLowerCase();
+    render();
+    const again = document.querySelector(".tagbar input");
+    if (again) {
+      again.focus();
+      again.setSelectionRange(again.value.length, again.value.length);
+    }
+  },
+  filterWords(value) {
+    ui.wordFilter = value.trim().toLowerCase();
     render();
     const again = document.querySelector(".tagbar input");
     if (again) {
@@ -149,17 +160,20 @@ function render() {
   $("views").hidden = !ui.editing;
   $("strap").hidden = ui.editing;
 
-  const tagsView = ui.editing && ui.view === "tags";
-  $("searchbox").hidden = tagsView;
-  $("shell").classList.toggle("wide", tagsView);
-  $("rail").hidden = tagsView;
+  const listView = ui.editing && ui.view !== "dances";
+  $("searchbox").hidden = listView;
+  $("shell").classList.toggle("wide", listView);
+  $("rail").hidden = listView;
 
   const main = $("main");
   main.replaceChildren();
 
-  if (tagsView) {
-    main.append(renderTags(store, ui, actions));
-    $("tally").innerHTML = `<b>${store.list.tags.length}</b> tags`;
+  if (listView) {
+    const words = ui.view === "words";
+    main.append(words ? renderWords(store, ui, actions) : renderTags(store, ui, actions));
+    $("tally").innerHTML = words
+      ? `<b>${store.words().length}</b> words`
+      : `<b>${store.list.tags.length}</b> tags`;
     renderTray();
     return;
   }
@@ -256,7 +270,9 @@ const describeShort = (intent) =>
     ? `${intent.value} on ${intent.slug}`
     : intent.op.startsWith("tag")
       ? `${intent.tag || intent.from} on ${intent.slug || "the tag list"}`
-      : intent.slug;
+      : intent.op.startsWith("word")
+        ? `${intent.word} in the word lists`
+        : intent.slug;
 
 // ---------- the proposal ----------
 
@@ -265,10 +281,22 @@ const jsonLine = (dance) =>
 
 function buildDiff(against) {
   const diff = $("diff");
-  const { rows, tagsChanged, before, after } = against || store.diff();
+  const { rows, tagsChanged, before, after, wordsChanged, wordsBefore, wordsAfter } =
+    against || store.diff();
 
   diff.replaceChildren();
   diff.append(el("span", "file", "dances.json\n"));
+
+  if (wordsChanged) {
+    for (const [kind, list] of [
+      ["del", wordsBefore],
+      ["add", wordsAfter],
+    ]) {
+      const mark = kind === "del" ? "- " : "+ ";
+      diff.append(el("span", kind, mark + '  "ignoredWords": ' + JSON.stringify(list.ignoredWords) + ",\n"));
+      diff.append(el("span", kind, mark + '  "numberWords": ' + JSON.stringify(list.numberWords) + ",\n"));
+    }
+  }
 
   if (tagsChanged) {
     diff.append(el("span", "del", '-   "tags": ' + JSON.stringify(before) + ",\n"));
@@ -279,7 +307,9 @@ function buildDiff(against) {
     diff.append(el("span", row.kind, (row.kind === "del" ? "- " : "+ ") + jsonLine(row.dance) + "\n"));
   }
 
-  if (!rows.length && !tagsChanged) diff.append(el("span", "file", "(nothing changed)"));
+  if (!rows.length && !tagsChanged && !wordsChanged) {
+    diff.append(el("span", "file", "(nothing changed)"));
+  }
 }
 
 /**
@@ -509,8 +539,21 @@ function compare(before, after) {
     if (!is.has(slug)) rows.push({ kind: "del", dance });
   }
 
+  // Sorted, or a word removed and added back would read as a change purely because its key
+  // landed at the other end of the object.
+  const words = (list) =>
+    JSON.stringify([
+      [...(list.ignoredWords || [])].sort(),
+      Object.keys(list.numberWords || {})
+        .sort()
+        .map((word) => [word, list.numberWords[word]]),
+    ]);
+
   return {
     rows,
+    wordsChanged: words(before) !== words(after),
+    wordsBefore: before,
+    wordsAfter: after,
     tagsChanged: before.tags.join("|") !== after.tags.join("|"),
     before: before.tags,
     after: after.tags,
@@ -534,10 +577,13 @@ function setMode(editing) {
   setView(ui.view);
 }
 
+const VIEWS = ["dances", "tags", "words"];
+
 function setView(view) {
   ui.view = view;
-  $("view-dances").setAttribute("aria-pressed", String(view === "dances"));
-  $("view-tags").setAttribute("aria-pressed", String(view === "tags"));
+  for (const name of VIEWS) {
+    $(`view-${name}`).setAttribute("aria-pressed", String(view === name));
+  }
   render();
 }
 
@@ -613,8 +659,9 @@ function wire() {
       say(error.gone ? error.message : "That could not be loaded. Try again in a moment.");
     }
   });
-  $("view-dances").addEventListener("click", () => setView("dances"));
-  $("view-tags").addEventListener("click", () => setView("tags"));
+  for (const name of VIEWS) {
+    $(`view-${name}`).addEventListener("click", () => setView(name));
+  }
   $("combine-any").addEventListener("click", () => setCombine("any"));
   $("combine-all").addEventListener("click", () => setCombine("all"));
 

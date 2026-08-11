@@ -4,8 +4,8 @@
 // intent and applies it, and the draft is saved. That is why a resumed draft behaves exactly
 // like the editing session that produced it.
 
-import { foldIndexed, matchKey } from "./fold.js";
-import { apply, describe, replay } from "./intents.js";
+import { fold, foldIndexed, matchKey } from "./fold.js";
+import { apply, describe, IGNORED, replay } from "./intents.js";
 import { clearDraft, loadDraft, saveDraft } from "./draft.js";
 import { listFrom } from "./github.js";
 
@@ -112,6 +112,31 @@ export async function createStore(suggestion) {
 
     tagCount: (tag) => store.list.dances.filter((d) => d.tags.includes(tag)).length,
 
+    /** Every word in either list, with what it means, in one order. */
+    words() {
+      const all = [
+        ...(store.list.ignoredWords || []).map((word) => ({ word, means: IGNORED })),
+        ...Object.entries(store.list.numberWords || {}).map(([word, means]) => ({ word, means })),
+      ];
+      return all.sort((a, b) => (a.word < b.word ? -1 : a.word > b.word ? 1 : 0));
+    },
+
+    /**
+     * How many names the word actually turns up in.
+     *
+     * The count worth showing, because a word that appears in nothing is doing nothing, and a
+     * list nobody can see the effect of is one that grows words on a hunch.
+     */
+    wordCount(word) {
+      let count = 0;
+      for (const dance of store.list.dances) {
+        for (const name of dance.names) {
+          if (fold(name).split(" ").includes(word)) count++;
+        }
+      }
+      return count;
+    },
+
     /** Which dance already goes by this name, if any. The rule the list rests on. */
     ownerOf(name, except) {
       const key = matchKey(name, store.list);
@@ -149,7 +174,24 @@ export async function createStore(suggestion) {
       }
 
       const tagsChanged = store.list.tags.join("|") !== store.published.tags.join("|");
-      return { rows, tagsChanged, before: store.published.tags, after: store.list.tags };
+      // Compared sorted, or adding a word back after removing it would read as a change
+      // purely because the key landed at the other end of the object.
+      const words = (list) =>
+        JSON.stringify([
+          [...(list.ignoredWords || [])].sort(),
+          Object.keys(list.numberWords || {})
+            .sort()
+            .map((word) => [word, list.numberWords[word]]),
+        ]);
+      return {
+        rows,
+        tagsChanged,
+        before: store.published.tags,
+        after: store.list.tags,
+        wordsChanged: words(store.list) !== words(store.published),
+        wordsBefore: store.published,
+        wordsAfter: store.list,
+      };
     },
   });
 

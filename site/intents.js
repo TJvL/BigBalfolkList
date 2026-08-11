@@ -21,7 +21,65 @@ export const OPS = [
   "tag.rename",
   "tag.merge",
   "tag.delete",
+  "word.add",
+  "word.remove",
 ];
+
+/** What a word means when names are compared: the digits it stands for, or ignored. */
+export const IGNORED = "ignored";
+
+export const meaningOf = (list, word) =>
+  list.numberWords?.[word] ?? (list.ignoredWords?.includes(word) ? IGNORED : null);
+
+/** The two word lists as they would be with one word changed. */
+function withWord(list, word, means) {
+  const ignoredWords = (list.ignoredWords || []).filter((w) => w !== word);
+  const numberWords = { ...list.numberWords };
+  delete numberWords[word];
+
+  if (means === IGNORED) ignoredWords.push(word);
+  else if (means != null) numberWords[word] = means;
+
+  return { ignoredWords: sorted(ignoredWords), numberWords };
+}
+
+/**
+ * Whether a change to the word lists would make two names the same name, and which.
+ *
+ * This is the whole risk in letting the lists be edited. A word that is glue in one name is
+ * part of a dance in another, and dropping it silently merges two dances, or leaves one dance
+ * holding a name twice. Both fail the build, so both are refused here with the names that
+ * caused it: at merge time the message would be a validator error pointing at a word list
+ * rather than at the dances it collapsed.
+ *
+ * Only adding or changing a word can collapse anything. Removing one can only ever tell two
+ * names further apart, so it needs no check.
+ */
+function collapses(list, words) {
+  const probe = { ...list, ...words };
+  const owner = new Map();
+
+  for (const dance of list.dances) {
+    const mine = new Map();
+    for (const name of dance.names) {
+      const key = matchKey(name, probe);
+
+      const taken = owner.get(key);
+      if (taken && taken.slug !== dance.slug) {
+        return `it would make “${name}” and “${taken.name}” the same name, and they belong to ${taken.slug} and ${dance.slug}`;
+      }
+      const same = mine.get(key);
+      if (same) {
+        return `it would make “${name}” and “${same}” the same name, and ${dance.slug} goes by both`;
+      }
+
+      if (!taken) owner.set(key, { slug: dance.slug, name });
+      mine.set(key, name);
+    }
+  }
+
+  return null;
+}
 
 const ok = () => ({ ok: true });
 const already = (reason) => ({ ok: true, already: true, reason });
@@ -150,6 +208,28 @@ export function apply(list, intent) {
       return ok();
     }
 
+    case "word.add": {
+      const { word, means } = intent;
+      if (!/^[a-z0-9]+$/.test(word)) return no("a word is one word, lowercase and unaccented");
+      if (means !== IGNORED && !/^[0-9]+$/.test(means)) {
+        return no("a word either stands for a number or is ignored");
+      }
+      if (meaningOf(list, word) === means) return already("that word already means that");
+
+      const words = withWord(list, word, means);
+      const clash = collapses({ ...list, ...words }, words);
+      if (clash) return no(clash);
+
+      Object.assign(list, words);
+      return ok();
+    }
+
+    case "word.remove": {
+      if (meaningOf(list, intent.word) === null) return already("that word is already gone");
+      Object.assign(list, withWord(list, intent.word, null));
+      return ok();
+    }
+
     default:
       return no(`unknown change "${intent.op}"`);
   }
@@ -203,6 +283,12 @@ export function describe(intent) {
       return { verb: "merged", text: `the tag ${intent.from} folded into ${intent.into}` };
     case "tag.delete":
       return { verb: "deleted", text: `the tag ${intent.tag} deleted` };
+    case "word.add":
+      return intent.means === IGNORED
+        ? { verb: "ignored", text: `“${intent.word}” is ignored when names are compared` }
+        : { verb: "number", text: `“${intent.word}” stands for ${intent.means}` };
+    case "word.remove":
+      return { verb: "word −", text: `“${intent.word}” no longer changes how names compare` };
     default:
       return { verb: "changed", text: intent.op };
   }
