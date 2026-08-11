@@ -8,9 +8,9 @@ Free for anything to use.
 ## Contributing
 
 Use **[the site](https://tjvl.github.io/BigBalfolkList/)**. It shows the whole list, lets you
-add a spelling, fix one, tag a dance or add a dance that is missing, and turns what you did
-into a proposal for someone to look at. Nothing you do goes live on its own, and you need
-nothing installed.
+add a spelling, fix one, tag a dance, add a dance that is missing or teach it a word that is
+only grammar, and turns what you did into a proposal for someone to look at. Nothing you do goes
+live on its own, and you need nothing installed.
 
 Your work is kept in your own browser as you go, so you can close the tab and come back to it.
 When you are ready, the site can open a pull request for you if you have a GitHub account, or
@@ -42,8 +42,9 @@ the lists.
 
 They are in `dances.json` and not in code because they grow with every language somebody adds a
 name in, and a consumer that ships the file gets the new words with it. Adding one is an
-ordinary edit, and a word that is actually part of a dance's name fails the build, naming the
-two dances it just collapsed.
+ordinary edit, on the **Words** screen of the site or by hand. Either way a word that is
+actually part of a dance's name is refused, quoting the two names it would have made into one:
+the site says so as you add it, and the build says so if it reaches a pull request.
 
 What the lists must not swallow is a real word. `temps`, `times` and `tijden` are the edge of
 what belongs in `ignoredWords`: they are there because `Valse à 3 temps` and `Valse 3` are the
