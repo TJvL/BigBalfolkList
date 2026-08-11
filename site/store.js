@@ -4,7 +4,7 @@
 // intent and applies it, and the draft is saved. That is why a resumed draft behaves exactly
 // like the editing session that produced it.
 
-import { fold, foldIndexed } from "./fold.js";
+import { foldIndexed, matchKey } from "./fold.js";
 import { apply, describe, replay } from "./intents.js";
 import { clearDraft, loadDraft, saveDraft } from "./draft.js";
 import { listFrom } from "./github.js";
@@ -14,6 +14,8 @@ import { listFrom } from "./github.js";
 const DATA = new URL("../dances.json", import.meta.url);
 
 const clone = (data) => ({
+  ignoredWords: [...(data.ignoredWords ?? [])],
+  numberWords: { ...data.numberWords },
   tags: [...data.tags],
   dances: data.dances.map((d) => ({ slug: d.slug, names: [...d.names], tags: [...d.tags] })),
 });
@@ -112,9 +114,9 @@ export async function createStore(suggestion) {
 
     /** Which dance already goes by this name, if any. The rule the list rests on. */
     ownerOf(name, except) {
-      const key = fold(name);
+      const key = matchKey(name, store.list);
       const owner = store.list.dances.find(
-        (d) => d.slug !== except && d.names.some((n) => fold(n) === key),
+        (d) => d.slug !== except && d.names.some((n) => matchKey(n, store.list) === key),
       );
       return owner || null;
     },
