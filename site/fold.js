@@ -55,3 +55,30 @@ export function fold(value) {
 export function slugify(value) {
   return fold(value).replace(/ /g, "-");
 }
+
+/**
+ * What two names have to share to be the same name. match_key() in scripts/validate.py is
+ * the same function, and they have to stay in step for the same reason fold() does.
+ *
+ * Folding alone leaves the list carrying one name several times over, because the difference
+ * between "Bourrée à 3 temps", "Bourrée in 3", "Bourrée 3t" and "Bourrée 3" is grammar and
+ * shorthand, not a different dance. So a word that spells a number becomes the number, and a
+ * word that is only glue is dropped. Both word lists come from the list itself rather than
+ * from here, so adding one is an edit to dances.json and not a code change.
+ *
+ * Slugs are not built from this; they come from fold(), so no slug moves when a word is added.
+ */
+export function matchKey(value, list) {
+  const ignored = new Set(list?.ignoredWords ?? []);
+  const numbers = list?.numberWords ?? {};
+
+  const folded = fold(value);
+  const kept = folded
+    .split(" ")
+    .map((word) => numbers[word] ?? word)
+    .filter((word) => !ignored.has(word));
+
+  // A name made of nothing but glue keeps its folded form, rather than becoming empty and
+  // colliding with every other such name.
+  return kept.length ? kept.join(" ") : folded;
+}

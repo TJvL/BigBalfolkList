@@ -15,12 +15,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from validate import DANCES, check, fold, render, slugify  # noqa: E402
+from validate import DANCES, check, fold, match_key, render, slugify  # noqa: E402
 
 
 def sample(**overrides) -> dict:
     data = {
-        "formatVersion": 3,
+        "formatVersion": 4,
+        "ignoredWords": ["a", "de", "in", "temps"],
+        "numberWords": {"3t": "3", "trois": "3"},
         "tags": ["bretagne", "france"],
         "dances": [
             {"slug": "an-dro", "names": ["An dro", "Andro"], "tags": ["bretagne", "france"]},
@@ -56,6 +58,34 @@ class Fold(unittest.TestCase):
         self.assertEqual(slugify("Pilé-menu"), "pile-menu")
 
 
+class MatchKey(unittest.TestCase):
+    """The key two names have to share to be the same name. site/fold.js implements it too,
+    and a name matches in one place and not the other the moment they disagree."""
+
+    IGNORED = {"a", "de", "in", "temps"}
+    NUMBERS = {"trois": "3", "3t": "3"}
+
+    def key(self, value: str) -> str:
+        return match_key(value, self.IGNORED, self.NUMBERS)
+
+    def test_glue_and_shorthand_give_one_name(self):
+        for spelling in ["Bourrée 3 temps", "Bourrée à 3 temps", "Bourrée in 3", "Bourrée 3t",
+                         "Bourrée à trois temps", "Bourrée 3"]:
+            self.assertEqual(self.key(spelling), "bourree 3", spelling)
+
+    def test_different_words_still_differ(self):
+        self.assertNotEqual(self.key("Wals in 3"), self.key("Waltz in 3"))
+        self.assertNotEqual(self.key("Ridée 6 temps"), self.key("Ridées 6 temps"))
+        self.assertNotEqual(self.key("Waltz"), self.key("Waltz in 3"))
+
+    def test_a_name_of_nothing_but_glue_keeps_its_folded_form(self):
+        self.assertEqual(self.key("In de"), "in de")
+
+    def test_slugs_are_not_built_from_it(self):
+        # A slug is permanent, so adding a word to either list must never move one.
+        self.assertEqual(slugify("Bourrée à 3 temps"), "bourree-a-3-temps")
+
+
 class Rules(unittest.TestCase):
     def test_the_real_list_passes(self):
         text = DANCES.read_text(encoding="utf-8")
@@ -72,6 +102,25 @@ class Rules(unittest.TestCase):
     def test_spelling_variants_of_one_name_still_collide(self):
         data = sample()
         data["dances"][1]["names"].append("an-dro")
+        self.assertTrue(any("belongs to both" in p for p in problems(data)))
+
+    def test_one_dance_may_not_hold_the_same_name_twice(self):
+        data = sample()
+        data["dances"][0]["names"] = ["Bourrée à 3 temps", "Bourrée 3t"]
+        self.assertTrue(any("Keep one of them" in p for p in problems(data)))
+
+    def test_the_word_lists_are_checked(self):
+        self.assertTrue(any("single lowercase word" in p
+                            for p in problems(sample(ignoredWords=["à 3 temps"]))))
+        self.assertTrue(any("must give digits" in p
+                            for p in problems(sample(numberWords={"trois": "three"}))))
+        self.assertTrue(any("cannot be both" in p
+                            for p in problems(sample(ignoredWords=["de", "trois"]))))
+
+    def test_a_word_that_collapses_two_dances_fails_the_build(self):
+        # The check that keeps either list from swallowing a word that names a dance.
+        data = sample(ignoredWords=["dro"])
+        data["dances"][1]["names"] = ["An"]
         self.assertTrue(any("belongs to both" in p for p in problems(data)))
 
     def test_a_tag_must_be_declared(self):
@@ -116,6 +165,10 @@ class Formatting(unittest.TestCase):
     def test_render_is_stable(self):
         once = render(sample())
         self.assertEqual(render(json.loads(once)), once)
+
+    def test_the_word_lists_are_written_one_per_line_and_sorted(self):
+        lines = render(sample(ignoredWords=["temps", "de", "in"])).splitlines()
+        self.assertEqual(lines[2:6], ['  "ignoredWords": [', '    "de",', '    "in",', '    "temps"'])
 
     def test_render_sorts_dances_and_tags(self):
         data = sample()

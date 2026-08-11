@@ -27,8 +27,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DANCES = ROOT / "dances.json"
 
-FORMAT_VERSION = 3
+FORMAT_VERSION = 4
 SLUG = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+WORD = re.compile(r"^[a-z0-9]+$")
+NUMBER = re.compile(r"^[0-9]+$")
 
 
 def fold(value: str) -> str:
@@ -58,15 +60,61 @@ def slugify(value: str) -> str:
     return re.sub(r"\s+", "-", fold(value))
 
 
+def match_key(value: str, ignored: set[str], numbers: dict[str, str]) -> str:
+    """What two names have to share to be the same name.
+
+    Folding alone leaves the list carrying the same name several times over, because the
+    difference between "Bourrée à 3 temps", "Bourrée in 3", "Bourrée 3t" and "Bourrée 3" is
+    grammar and shorthand, not a different dance. So after folding:
+
+    - a word that spells a number becomes the number, "trois" and "3t" both giving "3";
+    - a word that is only glue is dropped.
+
+    Both word lists live in dances.json rather than here, because they grow with every
+    language somebody adds a name in, and a consumer that ships the file then gets the new
+    words with it instead of having to ship code. Neither list may hold a word that is part
+    of a dance's name: the check that a name belongs to exactly one dance runs on this key,
+    so a word that does not belong fails the build and says which dances it collapsed.
+
+    Slugs are not built from this. They come from fold(), so no slug moves when a word is
+    added here.
+    """
+    tokens = [numbers.get(token, token) for token in fold(value).split()]
+    kept = [token for token in tokens if token not in ignored]
+    # A name made of nothing but glue keeps its folded form, rather than becoming empty and
+    # colliding with every other such name.
+    return " ".join(kept) or fold(value)
+
+
+def word_lists(data: dict) -> tuple[set[str], dict[str, str]]:
+    ignored = data.get("ignoredWords")
+    numbers = data.get("numberWords")
+    ignored = set(ignored) if isinstance(ignored, list) else set()
+    numbers = dict(numbers) if isinstance(numbers, dict) else {}
+    return ignored, numbers
+
+
 def render(data: dict) -> str:
     """The canonical text of the file. One dance per line, one tag per line, sorted."""
     tags = sorted(set(data.get("tags", [])))
     dances = sorted(data.get("dances", []), key=lambda d: d["slug"])
+    ignored, numbers = word_lists(data)
 
-    lines = ["{", f'  "formatVersion": {FORMAT_VERSION},', '  "tags": [']
-    lines += [f"    {json.dumps(t, ensure_ascii=False)}," for t in tags[:-1]]
-    if tags:
-        lines.append(f"    {json.dumps(tags[-1], ensure_ascii=False)}")
+    def rows(values: list[str]) -> list[str]:
+        """One value per line, the last without a comma. Same reason as one dance per line."""
+        return [f"    {v}," for v in values[:-1]] + ([f"    {values[-1]}"] if values else [])
+
+    lines = ["{", f'  "formatVersion": {FORMAT_VERSION},', '  "ignoredWords": [']
+    lines += rows([json.dumps(w, ensure_ascii=False) for w in sorted(ignored)])
+    lines.append("  ],")
+    lines.append('  "numberWords": {')
+    lines += rows(
+        [f"{json.dumps(w, ensure_ascii=False)}: {json.dumps(numbers[w], ensure_ascii=False)}"
+         for w in sorted(numbers)]
+    )
+    lines.append("  },")
+    lines.append('  "tags": [')
+    lines += rows([json.dumps(t, ensure_ascii=False) for t in tags])
     lines.append("  ],")
     lines.append('  "dances": [')
 
@@ -98,6 +146,29 @@ def check(data: dict, text: str, baseline: dict | None) -> list[str]:
         return problems + ['"tags" must be a list of strings']
     if not isinstance(dances, list):
         return problems + ['"dances" must be a list']
+    if not isinstance(data.get("ignoredWords"), list) or not all(
+        isinstance(w, str) for w in data["ignoredWords"]
+    ):
+        return problems + ['"ignoredWords" must be a list of strings']
+    if not isinstance(data.get("numberWords"), dict) or not all(
+        isinstance(w, str) and isinstance(v, str) for w, v in data["numberWords"].items()
+    ):
+        return problems + ['"numberWords" must map strings to strings']
+
+    ignored, numbers = word_lists(data)
+
+    for word in sorted(ignored):
+        if not WORD.match(word):
+            say(f"ignored word {word!r} is not a single lowercase word without accents")
+    for word in sorted({w for w in data["ignoredWords"] if data["ignoredWords"].count(w) > 1}):
+        say(f"ignored word {word!r} is listed twice")
+    for word, number in sorted(numbers.items()):
+        if not WORD.match(word):
+            say(f"number word {word!r} is not a single lowercase word without accents")
+        if not NUMBER.match(number):
+            say(f"the number word {word!r} must give digits, not {number!r}")
+        if word in ignored:
+            say(f"the word {word!r} is both ignored and a number; it cannot be both")
 
     for tag in tags:
         if not SLUG.match(tag):
@@ -122,8 +193,10 @@ def check(data: dict, text: str, baseline: dict | None) -> list[str]:
 
         seen_slugs[slug] = seen_slugs.get(slug, 0) + 1
 
+        mine: dict[str, str] = {}
+
         for name in names:
-            key = fold(name)
+            key = match_key(name, ignored, numbers)
             if not key:
                 say(f"{slug}: the name {name!r} is empty once punctuation is ignored")
                 continue
@@ -134,7 +207,16 @@ def check(data: dict, text: str, baseline: dict | None) -> list[str]:
                     f"the name {name!r} belongs to both {owner[key]} and {slug}. "
                     f"Qualify one of them, the way Ton doubl carries its suite."
                 )
+            # Within one dance the same collision is not ambiguity, it is clutter: two
+            # spellings the list cannot tell apart, which is the thing the word lists exist
+            # to stop being written out by hand.
+            if key in mine and mine[key] != name:
+                say(
+                    f"{slug}: {name!r} and {mine[key]!r} are the same name once the word "
+                    f"lists are applied. Keep one of them."
+                )
             owner.setdefault(key, slug)
+            mine.setdefault(key, name)
 
         for tag in dance.get("tags", []):
             if tag not in known:
@@ -172,9 +254,24 @@ def main() -> int:
     parser.add_argument("--fix", action="store_true", help="write the file back in canonical shape")
     parser.add_argument("--baseline", type=Path, help="a previous dances.json, to catch a removed slug")
     parser.add_argument("--file", type=Path, default=DANCES)
+    parser.add_argument(
+        "--keys",
+        action="store_true",
+        help="print every name with its folded form and match key, for scripts/check_fold.mjs",
+    )
     args = parser.parse_args()
 
     data, text = load(args.file)
+
+    if args.keys:
+        ignored, numbers = word_lists(data)
+        keys = {
+            name: [fold(name), match_key(name, ignored, numbers)]
+            for dance in data["dances"]
+            for name in dance["names"]
+        }
+        print(json.dumps(keys, ensure_ascii=False, sort_keys=True))
+        return 0
 
     if args.fix:
         canonical = render(data)

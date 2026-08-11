@@ -13,18 +13,27 @@ const array = (values) => "[" + values.map(string).join(", ") + "]";
 const entry = (dance) =>
   `{"slug": ${string(dance.slug)}, "names": ${array(dance.names)}, "tags": ${array(dance.tags)}}`;
 
-export const FORMAT_VERSION = 3;
+export const FORMAT_VERSION = 4;
 
 export function canonical(list) {
   const tags = [...new Set(list.tags)].sort();
   const dances = [...list.dances].sort((a, b) => (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0));
+  const ignored = [...new Set(list.ignoredWords ?? [])].sort();
+  const numbers = list.numberWords ?? {};
 
-  const lines = ["{", `  "formatVersion": ${FORMAT_VERSION},`, '  "tags": ['];
+  // One value per line, the last without a comma. Same reason as one dance per line.
+  const rows = (values) =>
+    values.map((value, index) => "    " + value + (index === values.length - 1 ? "" : ","));
 
-  tags.forEach((tag, index) => {
-    lines.push("    " + string(tag) + (index === tags.length - 1 ? "" : ","));
-  });
+  const lines = ["{", `  "formatVersion": ${FORMAT_VERSION},`, '  "ignoredWords": ['];
 
+  lines.push(...rows(ignored.map(string)));
+  lines.push("  ],");
+  lines.push('  "numberWords": {');
+  lines.push(...rows(Object.keys(numbers).sort().map((w) => `${string(w)}: ${string(numbers[w])}`)));
+  lines.push("  },");
+  lines.push('  "tags": [');
+  lines.push(...rows(tags.map(string)));
   lines.push("  ],");
   lines.push('  "dances": [');
 

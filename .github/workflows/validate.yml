@@ -43,6 +43,11 @@ jobs:
         # drifted from the validator's, every proposal it made would fail this very check.
         run: node scripts/check_canonical.mjs
 
+      - name: The site compares names the way the validator does
+        # The README tells consumers to copy one of the two implementations, so a name has to
+        # fold and key the same in both or it resolves in one place and not the other.
+        run: node scripts/check_fold.mjs
+
       - name: Check the list
         run: |
           if [ -f /tmp/baseline.json ]; then

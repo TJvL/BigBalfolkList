@@ -33,6 +33,23 @@ dance goes by. Spelling is contested and this list does not take sides. An equiv
 means *the same dance under different names* — not similar dances, and not dances you happen
 to treat as interchangeable when you programme an evening. That is your own business.
 
+**Grammar is not a spelling.** `Bourrée à 3 temps`, `Bourrée in 3`, `Bourrée à trois temps`,
+`Bourrée 3t` and `Bourrée 3` are one name written five ways, and writing all five out is how a
+dance ends up with a dozen names nobody can read. So two small word lists sit at the top of the
+file and names are compared with them applied: a word in `numberWords` becomes its number, and
+a word in `ignoredWords` is dropped. Write the name the way it is said and leave the rest to
+the lists.
+
+They are in `dances.json` and not in code because they grow with every language somebody adds a
+name in, and a consumer that ships the file gets the new words with it. Adding one is an
+ordinary edit, and a word that is actually part of a dance's name fails the build, naming the
+two dances it just collapsed.
+
+What the lists must not swallow is a real word. `temps`, `times` and `tijden` are the edge of
+what belongs in `ignoredWords`: they are there because `Valse à 3 temps` and `Valse 3` are the
+same dance, and everything else in that list is pure glue. Plurals are deliberately left alone,
+so `Ridée 6 temps` and `Ridées 6 temps` are still two names.
+
 **A name belongs to exactly one dance**, and the build fails if that stops being true. So
 anything that finds a name in a filename can resolve it to one dance and never has to model
 ambiguity. Where a word really does name several dances — each Breton suite has its own
@@ -62,8 +79,8 @@ move and are never withdrawn.
 
 ### Matching a name people typed
 
-Compare folded names, or you will miss matches that are obviously the same word to a human.
-Three rules, and each one costs real matches if you get it backwards:
+Never compare the names as written. Fold first, or you will miss matches that are obviously the
+same word to a human. Three rules, and each one costs real matches if you get it backwards:
 
 | Rule | Example |
 | --- | --- |
@@ -74,8 +91,23 @@ Three rules, and each one costs real matches if you get it backwards:
 Removing the hyphen too would give `pilemenu`, and turning the apostrophe into a space would
 give `kost ar c hoad`. Neither matches anything anybody types.
 
+Then split the folded name into words and apply the two lists, which is what makes the five
+spellings of one bourrée land on one dance:
+
+| Rule | Example |
+| --- | --- |
+| A word in `numberWords` becomes that number | `bourree a trois temps` → `bourree a 3 temps` |
+| A word in `ignoredWords` is dropped | `bourree a 3 temps` → `bourree 3` |
+| Nothing left means the name was all glue, so keep the folded form | `in de` → `in de` |
+
+That is the **match key**, and it is what "a name belongs to exactly one dance" is enforced on,
+so a key resolves to one dance or to none. Slugs are built from the folded name and never from
+the key, which is why a word can be added to either list without a slug moving.
+
 Reference implementations to copy: [`scripts/validate.py`](scripts/validate.py) in Python and
-[`site/fold.js`](site/fold.js) in JavaScript. They agree, and a test keeps them agreeing.
+[`site/fold.js`](site/fold.js) in JavaScript. They agree on every name in the list, and
+[`scripts/check_fold.mjs`](scripts/check_fold.mjs) runs both on every pull request to keep it
+that way.
 
 ## The file's shape
 
@@ -91,6 +123,7 @@ python3 scripts/validate.py --fix    # puts the file back in shape
 python3 scripts/validate.py          # says yes or no
 python3 scripts/test_validate.py     # the validator's own tests
 node scripts/check_canonical.mjs     # the site writes what the validator wants
+node scripts/check_fold.mjs          # the site compares names the way the validator does
 ```
 
 Nothing to install; any Python 3.11 or newer will do.

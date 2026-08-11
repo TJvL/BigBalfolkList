@@ -8,7 +8,7 @@
 // apply() never throws. It returns why it could not be applied, which is what lets a resumed
 // draft say "this one no longer fits" instead of silently dropping it.
 
-import { fold } from "./fold.js";
+import { matchKey } from "./fold.js";
 
 export const OPS = [
   "dance.add",
@@ -30,9 +30,9 @@ const no = (reason) => ({ ok: false, reason });
 const find = (list, slug) => list.dances.find((d) => d.slug === slug);
 
 const ownerOf = (list, name, except) => {
-  const key = fold(name);
+  const key = matchKey(name, list);
   const owner = list.dances.find(
-    (d) => d.slug !== except && d.names.some((n) => fold(n) === key),
+    (d) => d.slug !== except && d.names.some((n) => matchKey(n, list) === key),
   );
   return owner ? owner.slug : null;
 };
@@ -76,8 +76,9 @@ export function apply(list, intent) {
 
     case "name.add": {
       if (!dance) return no("that dance no longer exists");
-      const key = fold(intent.value);
-      if (dance.names.some((n) => fold(n) === key)) return already("it already has that name");
+      const key = matchKey(intent.value, list);
+      if (dance.names.some((n) => matchKey(n, list) === key))
+        return already("it already has that name");
       const owner = ownerOf(list, intent.value, intent.slug);
       if (owner) return no(`"${intent.value}" now belongs to ${owner}`);
       dance.names.push(intent.value);

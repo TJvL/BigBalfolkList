@@ -2,12 +2,13 @@
 //
 // Two rules shape the fields. A name is checked against every other dance while it is being
 // typed, because "a name belongs to exactly one dance" is the rule the whole list rests on
-// and finding out at merge time is too late. And picking an existing tag is one keystroke
+// and finding out at merge time is too late. It is checked on the match key, so "Bourrée in 3"
+// is refused as a name the list already has rather than added beside "Bourrée à 3 temps". And picking an existing tag is one keystroke
 // while inventing one costs a deliberate click, because free tagging sprawls into
 // near-duplicates within a month.
 
 import { button, el } from "./dom.js";
-import { fold, slugify } from "./fold.js";
+import { matchKey, slugify } from "./fold.js";
 
 const IDLE_NAME_HINT =
   "Names sit side by side as equals. Whichever you add is no more correct than the others.";
@@ -42,34 +43,36 @@ export function nameField(store, dance, rerender) {
 
   field.append(tokens, note);
 
-  // Names are compared folded, exactly as the list itself compares them, or the field says a
-  // spelling is free and then the change is quietly refused. "Forro" is "Forró" here.
+  // Names are compared on the match key, exactly as the list itself compares them, or the
+  // field says a spelling is free and then the change is quietly refused. "Forro" is "Forró"
+  // here, and "Bourrée 3t" is "Bourrée à 3 temps".
   const look = (raw) => {
     const value = raw.trim();
     if (!value) return { quiet: true };
 
-    const key = fold(value);
+    const key = matchKey(value, store.list);
     const owner = store.ownerOf(value, dance.slug);
     if (owner) {
-      const match = owner.names.find((n) => fold(n) === key);
+      const match = owner.names.find((n) => matchKey(n, store.list) === key);
       return {
         ok: false,
         message:
           match === value
             ? `“${value}” already names ${owner.names[0]}. A name can only belong to one dance.`
             : `“${value}” is the same name as “${match}”, which belongs to ${owner.names[0]}. ` +
-              `Accents, punctuation and case are ignored when names are compared.`,
+              `Accents, punctuation, case, glue words and the spelling of a number are all ` +
+              `ignored when names are compared.`,
       };
     }
-    const mine = dance.names.find((n) => fold(n) === key);
+    const mine = dance.names.find((n) => matchKey(n, store.list) === key);
     if (mine) {
       return {
         ok: false,
         message:
           mine === value
             ? "This dance already goes by that name."
-            : `It already goes by “${mine}”, which is the same name once accents, punctuation ` +
-              `and case are ignored.`,
+            : `It already goes by “${mine}”, which is the same name once accents, ` +
+              `punctuation, case, glue words and the spelling of a number are ignored.`,
       };
     }
     return { ok: true, message: "Free to use." };
