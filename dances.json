@@ -223,6 +223,7 @@
     {"slug": "schottis", "names": ["Schottis"], "tags": ["couple", "sweden"]},
     {"slug": "scottish", "names": ["Scottish", "Schottische", "Escoticha"], "tags": ["couple", "pan-scene"]},
     {"slug": "scottish-impair", "names": ["Scottish impair", "Scottish impaire"], "tags": ["couple", "pan-scene"]},
+    {"slug": "scottish-polka", "names": ["Scottish-Polka"], "tags": ["couple", "hybrid", "pan-scene"]},
     {"slug": "slangpolska", "names": ["Slängpolska"], "tags": ["couple", "sweden"]},
     {"slug": "tamm-kreiz", "names": ["Tamm kreiz", "Bal gavotte"], "tags": ["bretagne", "france", "gavotte", "suite", "suite-montagne"]},
     {"slug": "tarantella", "names": ["Tarantella"], "tags": ["italy"]},
