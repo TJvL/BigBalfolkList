@@ -93,12 +93,14 @@
     "france",
     "gascogne",
     "gavotte",
+    "germany",
     "hybrid",
     "ireland",
     "israel",
     "italy",
     "mixer",
     "netherlands",
+    "norway",
     "pan-scene",
     "poitou",
     "portugal",
@@ -175,7 +177,8 @@
     {"slug": "gavotte-du-bas-leon", "names": ["Gavotte du Bas Leon"], "tags": ["bretagne", "france", "gavotte"]},
     {"slug": "gavotte-grenoble", "names": ["Gavotte Grenoble"], "tags": ["chain", "france", "gavotte", "quadrette"]},
     {"slug": "grabbelton", "names": ["Grabbelton"], "tags": ["mixer", "netherlands"]},
-    {"slug": "haling", "names": ["Haling"], "tags": ["sweden"]},
+    {"slug": "halling", "names": ["Halling"], "tags": ["norway", "solo"]},
+    {"slug": "hambo", "names": ["Hambo"], "tags": ["couple", "sweden"]},
     {"slug": "hanter-dro", "names": ["Hanter dro", "Hanterdro"], "tags": ["bretagne", "chain", "france"]},
     {"slug": "hanter-dro-klamm", "names": ["Hanter dro klamm", "Hanterdro klamm"], "tags": ["bretagne", "chain", "france"]},
     {"slug": "ijswals", "names": ["IJswals"], "tags": ["choreographed", "couple", "netherlands"]},
@@ -237,9 +240,11 @@
     {"slug": "waltz-in-11", "names": ["Waltz in 11", "Valse à 11 temps", "Wals in 11", "Vals à 11 temps"], "tags": ["couple", "pan-scene", "waltz"]},
     {"slug": "waltz-in-3", "names": ["Waltz in 3", "Valse à 3 temps", "Wals in 3", "Wals", "Vals", "Valse", "Waltz"], "tags": ["couple", "pan-scene", "waltz"]},
     {"slug": "waltz-in-5", "names": ["Waltz in 5", "Valse à 5 temps", "Wals in 5", "Vals à 5 temps"], "tags": ["couple", "pan-scene", "waltz"]},
+    {"slug": "waltz-in-7", "names": ["Waltz in 7", "Valse à 7 temps", "Wals in 7", "Vals à 7 temps"], "tags": ["couple", "pan-scene", "waltz"]},
     {"slug": "waltz-in-8", "names": ["Waltz in 8", "Valse à 8 temps", "Wals in 8", "Vals à 8 temps"], "tags": ["couple", "pan-scene", "waltz"]},
     {"slug": "waltz-scottish", "names": ["Waltz-Scottish", "Valse-Scottish", "Wals-Scottish"], "tags": ["couple", "hybrid", "pan-scene"]},
-    {"slug": "zazpi-jautzi", "names": ["Zazpi jautzi", "Sept sauts"], "tags": ["basque", "saut"]},
-    {"slug": "zelda", "names": ["Zelda"], "tags": ["mixer", "pan-scene"]}
+    {"slug": "zazpi-jautzi", "names": ["Zazpi jautzi", "Sept sauts", "Zevensprong"], "tags": ["basque", "saut"]},
+    {"slug": "zelda", "names": ["Zelda"], "tags": ["mixer", "pan-scene"]},
+    {"slug": "zwiefacher", "names": ["Zwiefacher"], "tags": ["couple", "germany", "hybrid"]}
   ]
 }
