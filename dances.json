@@ -188,7 +188,7 @@
     {"slug": "gavotte-des-montagnes", "names": ["Gavotte des montagnes", "Ton simpl (montagne)", "Ton kentan"], "tags": ["bretagne", "france", "gavotte", "suite", "suite-montagne"]},
     {"slug": "gavotte-du-bas-leon", "names": ["Gavotte du Bas Leon"], "tags": ["bretagne", "france", "gavotte"]},
     {"slug": "gavotte-grenoble", "names": ["Gavotte Grenoble"], "tags": ["chain", "france", "gavotte", "quadrette"]},
-    {"slug": "gigue-in-15", "names": ["Gigue in 15"], "tags": ["mixer", "pan-scene"]},
+    {"slug": "gigue-in-15", "names": ["Gigue in 15", "Chapelloise in 15", "Jig in 15", "Chapeloise in 15", "Chappelloise in 15", "Chappeloise in 15", "Jigue in 15"], "tags": ["mixer", "pan-scene"]},
     {"slug": "grabbelton", "names": ["Grabbelton"], "tags": ["mixer", "netherlands"]},
     {"slug": "grand-danse", "names": ["Grand Danse"], "tags": ["circle", "france", "poitou", "vendee"]},
     {"slug": "halling", "names": ["Halling"], "tags": ["norway", "solo"]},
