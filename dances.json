@@ -164,7 +164,7 @@
     {"slug": "carnaval-de-lanz", "names": ["Carnaval de Lanz", "Zortziko de Lanz", "Lantz Zortziko", "Zorziko", "Carnival"], "tags": ["basque", "solo"]},
     {"slug": "cercle-a-tiroirs", "names": ["Cercle à Tiroirs"], "tags": ["circle", "france", "hybrid", "mixer"]},
     {"slug": "cercle-circassien", "names": ["Cercle Circassien", "Circassian Circle", "Cercles Circassiens", "Cercle", "Tovercirkel"], "tags": ["circle", "mixer", "pan-scene"]},
-    {"slug": "cercle-in-6", "names": ["Cercle in 6"], "tags": ["circle", "mixer", "pan-scene"]},
+    {"slug": "cercle-in-6", "names": ["Cercle in 6", "Cercle Circassien in 6", "Circassian Circle in 6", "Cercles Circassiens in 6", "Tovercirkel in 6"], "tags": ["circle", "mixer", "pan-scene"]},
     {"slug": "chapelloise", "names": ["Chapelloise", "Jig", "Gigue", "Chapeloise", "Chappelloise", "Chappeloise", "Jigue"], "tags": ["mixer", "pan-scene"]},
     {"slug": "charmantina", "names": ["Charmantina"], "tags": ["bearn", "france", "gascogne", "saut"]},
     {"slug": "chasse-a-quattre", "names": ["Chasse à Quattre", "Chass à Quat"], "tags": ["chain", "france", "poitou", "quadrette", "vendee"]},
