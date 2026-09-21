@@ -282,7 +282,7 @@
     {"slug": "scottish-polka", "names": ["Scottish-Polka", "Polka-Scottish"], "tags": ["couple", "hybrid", "pan-scene"]},
     {"slug": "set-carre", "names": ["Set Carré"], "tags": ["canada", "quebec"]},
     {"slug": "skolacka", "names": ["Školácká"], "tags": ["couple", "czechia"]},
-    {"slug": "slangpolska", "names": ["Slängpolska"], "tags": ["couple", "sweden"]},
+    {"slug": "slangpolska", "names": ["Slängpolska", "Slingpolska"], "tags": ["couple", "sweden"]},
     {"slug": "tamm-kreiz", "names": ["Tamm kreiz", "Bal gavotte", "Gavotte (3-4 Tamm Kreiz)", "Suite Gavotte Tamm-Kreiz"], "tags": ["bretagne", "france", "gavotte", "suite", "suite-montagne"]},
     {"slug": "tarantella", "names": ["Tarantella"], "tags": ["choreographed", "couple", "italy"]},
     {"slug": "ton-doubl-fisel", "names": ["Ton doubl (fisel)"], "tags": ["bretagne", "france", "gavotte", "suite", "suite-fisel"]},
